@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sound Billing | Equipment</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =========================
+         Sidebar
+    ========================== -->
+<%- include("partials/sidebar") %>
+
+
+    <!-- =========================
+         Main
+    ========================== -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <header class="header">
+
+            <div>
+
+                <h1>
+                    Equipment
+                </h1>
+
+                <p>
+                    Manage your sound equipment inventory
+                </p>
+
+            </div>
+
+
+            <div class="profile">
+
+                <div class="avatar">
+                    A
+                </div>
+
+                <div>
+
+                    <strong>
+                        Admin
+                    </strong>
+
+                    <small>
+                        Administrator
+                    </small>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             Equipment Summary
+        ========================== -->
+
+        <section class="stats">
+
+            <div class="card">
+
+                <span>
+                    Total Equipment
+                </span>
+
+                <h2 id="totalEquipment">
+                    <%= equipments.length %>
+                </h2>
+
+                <small>
+                    Equipment types
+                </small>
+
+            </div>
+
+
+            <div class="card">
+
+                <span>
+                    Total Quantity
+                </span>
+
+                <h2 id="totalQuantity">
+                    <%= equipments.reduce((sum, item) => sum + item.totalQuantity, 0) %>
+                </h2>
+
+                <small>
+                    Total units
+                </small>
+
+            </div>
+
+
+            <div class="card">
+
+                <span>
+                    Available
+                </span>
+
+                <h2 id="availableQuantity">
+                    <%= equipments.reduce((sum, item) => sum + item.availableQuantity, 0) %>
+                </h2>
+
+                <small>
+                    Ready for rental
+                </small>
+
+            </div>
+
+
+            <div class="card">
+
+                <span>
+                    Currently Rented
+                </span>
+
+                <h2 id="rentedQuantity">
+                    <%= equipments.reduce((sum, item) => sum + item.rentedQuantity, 0) %>
+                </h2>
+
+                <small>
+                    Currently outside
+                </small>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             Equipment Panel
+        ========================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Equipment List
+                    </h2>
+
+                    <p class="panel-subtitle">
+                        Add and manage your equipment
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="primary-btn"
+                    onclick="openAddEquipment()">
+
+                    + Add Equipment
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 Table
+            ========================== -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Equipment
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Brand
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Available
+                            </th>
+
+                            <th>
+                                Rented
+                            </th>
+
+                            <th>
+                                Rental Price
+                            </th>
+
+                            <th>
+                                Condition
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <% if (equipments.length === 0) { %>
+
+                        <tr>
+
+                            <td
+                                colspan="9"
+                                style="text-align:center; padding:40px;">
+
+                                <strong>
+                                    No equipment added yet
+                                </strong>
+
+                                <br>
+
+                                <small>
+                                    Click "+ Add Equipment" to add your first equipment.
+                                </small>
+
+                            </td>
+
+                        </tr>
+
+                    <% } %>
+
+
+                    <% equipments.forEach(equipment => { %>
+
+                        <tr>
+
+                            <!-- Equipment -->
+
+                            <td>
+
+                                <strong>
+                                    <%= equipment.name %>
+                                </strong>
+
+                                <% if (equipment.model) { %>
+
+                                    <br>
+
+                                    <small>
+                                        <%= equipment.model %>
+                                    </small>
+
+                                <% } %>
+
+                            </td>
+
+
+                            <!-- Category -->
+
+                            <td>
+                                <%= equipment.category %>
+                            </td>
+
+
+                            <!-- Brand -->
+
+                            <td>
+
+                                <%= equipment.brand || "-" %>
+
+                            </td>
+
+
+                            <!-- Total -->
+
+                            <td>
+
+                                <strong>
+                                    <%= equipment.totalQuantity %>
+                                </strong>
+
+                            </td>
+
+
+                            <!-- Available -->
+
+                            <td>
+
+                                <span class="status paid">
+
+                                    <%= equipment.availableQuantity %>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- Rented -->
+
+                            <td>
+
+                                <span class="status pending">
+
+                                    <%= equipment.rentedQuantity %>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- Rental Price -->
+
+                            <td>
+
+                                ₹<%= Number(equipment.rentalPrice || 0).toLocaleString("en-IN") %>
+
+                            </td>
+
+
+                            <!-- Condition -->
+
+                            <td>
+
+                                <% if (equipment.condition === "Good") { %>
+
+                                    <span class="status paid">
+                                        Good
+                                    </span>
+
+                                <% } else if (equipment.condition === "Fair") { %>
+
+                                    <span class="status pending">
+                                        Fair
+                                    </span>
+
+                                <% } else { %>
+
+                                    <span class="status pending">
+                                        Damaged
+                                    </span>
+
+                                <% } %>
+
+                            </td>
+
+
+                            <!-- Actions -->
+
+                            <td>
+
+                                <div class="table-actions">
+
+                                    <button
+                                        class="edit-btn"
+                                        onclick="openEditEquipment(
+                                            '<%= equipment._id %>',
+                                            '<%= equipment.name.replace(/'/g, "\\'") %>',
+                                            '<%= equipment.category.replace(/'/g, "\\'") %>',
+                                            '<%= (equipment.brand || "").replace(/'/g, "\\'") %>',
+                                            '<%= (equipment.model || "").replace(/'/g, "\\'") %>',
+                                            '<%= equipment.totalQuantity %>',
+                                            '<%= equipment.purchasePrice || 0 %>',
+                                            '<%= equipment.rentalPrice || 0 %>',
+                                            '<%= equipment.condition %>',
+                                            '<%= (equipment.notes || "").replace(/'/g, "\\'") %>'
+                                        )">
+
+                                        Edit
+
+                                    </button>
+
+
+                                    <form
+                                        action="/equipment/delete/<%= equipment._id %>"
+                                        method="POST"
+                                        style="display:inline;"
+                                        onsubmit="return confirm('Are you sure you want to delete this equipment?');">
+
+                                        <button
+                                            type="submit"
+                                            class="action-btn">
+
+                                            Delete
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    <% }); %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================
+     Equipment Modal
+========================== -->
+
+<div
+    id="equipmentModal"
+    class="modal">
+
+
+    <div class="modal-content">
+
+
+        <!-- Modal Header -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2 id="equipmentModalTitle">
+                    Add Equipment
+                </h2>
+
+                <p>
+                    Add equipment to your inventory
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeEquipmentModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             Equipment Form
+        ========================== -->
+
+        <form
+            id="equipmentForm"
+            method="POST"
+            action="/equipment/add">
+
+
+            <div class="form-grid">
+
+
+                <!-- Name -->
+
+                <div class="form-group">
+
+                    <label>
+                        Equipment Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        id="equipmentName"
+                        placeholder="Example: JBL Speaker"
+                        required>
+
+                </div>
+
+
+                <!-- Category -->
+
+                <div class="form-group">
+
+                    <label>
+                        Category
+                    </label>
+
+                    <select
+                        name="category"
+                        id="equipmentCategory"
+                        required>
+
+                        <option value="">
+                            Select category
+                        </option>
+
+                        <option value="Speaker">
+                            Speaker
+                        </option>
+
+                        <option value="Amplifier">
+                            Amplifier
+                        </option>
+
+                        <option value="Mixer">
+                            Mixer
+                        </option>
+
+                        <option value="Microphone">
+                            Microphone
+                        </option>
+
+                        <option value="Stand">
+                            Stand
+                        </option>
+
+                        <option value="Cable">
+                            Cable
+                        </option>
+
+                        <option value="Light">
+                            Light
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Brand -->
+
+                <div class="form-group">
+
+                    <label>
+                        Brand
+                    </label>
+
+                    <input
+                        type="text"
+                        name="brand"
+                        id="equipmentBrand"
+                        placeholder="Example: JBL">
+
+                </div>
+
+
+                <!-- Model -->
+
+                <div class="form-group">
+
+                    <label>
+                        Model
+                    </label>
+
+                    <input
+                        type="text"
+                        name="model"
+                        id="equipmentModel"
+                        placeholder="Example: PRX815">
+
+                </div>
+
+
+                <!-- Quantity -->
+
+                <div class="form-group">
+
+                    <label>
+                        Total Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        name="totalQuantity"
+                        id="equipmentQuantity"
+                        min="0"
+                        placeholder="0"
+                        required>
+
+                </div>
+
+
+                <!-- Purchase Price -->
+
+                <div class="form-group">
+
+                    <label>
+                        Purchase Price
+                    </label>
+
+                    <input
+                        type="number"
+                        name="purchasePrice"
+                        id="equipmentPurchasePrice"
+                        min="0"
+                        placeholder="₹ 0">
+
+                </div>
+
+
+                <!-- Rental Price -->
+
+                <div class="form-group">
+
+                    <label>
+                        Rental Price
+                    </label>
+
+                    <input
+                        type="number"
+                        name="rentalPrice"
+                        id="equipmentRentalPrice"
+                        min="0"
+                        placeholder="₹ 0">
+
+                </div>
+
+
+                <!-- Condition -->
+
+                <div class="form-group">
+
+                    <label>
+                        Condition
+                    </label>
+
+                    <select
+                        name="condition"
+                        id="equipmentCondition">
+
+                        <option value="Good">
+                            Good
+                        </option>
+
+                        <option value="Fair">
+                            Fair
+                        </option>
+
+                        <option value="Damaged">
+                            Damaged
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Notes -->
+
+                <div
+                    class="form-group"
+                    style="grid-column: 1 / -1;">
+
+                    <label>
+                        Notes
+                    </label>
+
+                    <textarea
+                        name="notes"
+                        id="equipmentNotes"
+                        rows="3"
+                        placeholder="Additional notes"></textarea>
+
+                </div>
+
+            </div>
+
+
+            <!-- Modal Footer -->
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeEquipmentModal()">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    id="equipmentSaveBtn">
+
+                    Save Equipment
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     JavaScript
+========================== -->
+
+<script>
+
+    const equipmentModal =
+        document.getElementById("equipmentModal");
+
+
+    const equipmentForm =
+        document.getElementById("equipmentForm");
+
+
+    const equipmentModalTitle =
+        document.getElementById("equipmentModalTitle");
+
+
+    const equipmentSaveBtn =
+        document.getElementById("equipmentSaveBtn");
+
+
+    const equipmentName =
+        document.getElementById("equipmentName");
+
+
+    const equipmentCategory =
+        document.getElementById("equipmentCategory");
+
+
+    const equipmentBrand =
+        document.getElementById("equipmentBrand");
+
+
+    const equipmentModel =
+        document.getElementById("equipmentModel");
+
+
+    const equipmentQuantity =
+        document.getElementById("equipmentQuantity");
+
+
+    const equipmentPurchasePrice =
+        document.getElementById("equipmentPurchasePrice");
+
+
+    const equipmentRentalPrice =
+        document.getElementById("equipmentRentalPrice");
+
+
+    const equipmentCondition =
+        document.getElementById("equipmentCondition");
+
+
+    const equipmentNotes =
+        document.getElementById("equipmentNotes");
+
+
+
+    /* =========================
+       Add Equipment
+    ========================== */
+
+    function openAddEquipment() {
+
+        equipmentForm.reset();
+
+        equipmentForm.action =
+            "/equipment/add";
+
+        equipmentModalTitle.textContent =
+            "Add Equipment";
+
+        equipmentSaveBtn.textContent =
+            "Save Equipment";
+
+        equipmentModal.classList.add("show");
+
+        equipmentName.focus();
+
+    }
+
+
+
+    /* =========================
+       Edit Equipment
+    ========================== */
+
+    function openEditEquipment(
+        id,
+        name,
+        category,
+        brand,
+        model,
+        quantity,
+        purchasePrice,
+        rentalPrice,
+        condition,
+        notes
+    ) {
+
+        equipmentForm.action =
+            "/equipment/edit/" + id;
+
+
+        equipmentModalTitle.textContent =
+            "Edit Equipment";
+
+
+        equipmentSaveBtn.textContent =
+            "Update Equipment";
+
+
+        equipmentName.value =
+            name;
+
+
+        equipmentCategory.value =
+            category;
+
+
+        equipmentBrand.value =
+            brand;
+
+
+        equipmentModel.value =
+            model;
+
+
+        equipmentQuantity.value =
+            quantity;
+
+
+        equipmentPurchasePrice.value =
+            purchasePrice;
+
+
+        equipmentRentalPrice.value =
+            rentalPrice;
+
+
+        equipmentCondition.value =
+            condition;
+
+
+        equipmentNotes.value =
+            notes;
+
+
+        equipmentModal.classList.add("show");
+
+    }
+
+
+
+    /* =========================
+       Close Modal
+    ========================== */
+
+    function closeEquipmentModal() {
+
+        equipmentModal.classList.remove("show");
+
+    }
+
+
+
+    /* =========================
+       Click Outside Modal
+    ========================== */
+
+    window.addEventListener(
+        "click",
+        function(event) {
+
+            if (event.target === equipmentModal) {
+
+                closeEquipmentModal();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

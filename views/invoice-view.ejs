@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        <%= invoice.invoiceNumber %> | Sound Billing
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+            padding: 30px;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        /* =========================
+           ACTIONS
+        ========================== */
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            color: #2563eb;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-pdf {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-whatsapp {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-whatsapp:hover {
+            background: #15803d;
+        }
+
+        /* =========================
+           INVOICE
+        ========================== */
+
+        .invoice {
+            background: white;
+            padding: 45px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #111827;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .company-subtitle {
+            margin-top: 7px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-title h1 {
+            font-size: 30px;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+
+        .invoice-number {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        /* =========================
+           CUSTOMER / EVENT
+        ========================== */
+
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 25px 0;
+        }
+
+        .info-box h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 9px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: #4b5563;
+            margin-top: 4px;
+        }
+
+        /* =========================
+           TABLE
+        ========================== */
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .invoice-table th {
+            background: #f9fafb;
+            padding: 13px;
+            text-align: left;
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .invoice-table td {
+            padding: 14px 13px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .invoice-table .amount {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* =========================
+           SUMMARY
+        ========================== */
+
+        .summary-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .summary {
+            width: 330px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #111827;
+            margin-top: 8px;
+            padding-top: 14px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .summary-row.advance {
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .summary-row.balance {
+            background: #eff6ff;
+            padding: 13px;
+            border-radius: 7px;
+            margin-top: 8px;
+            font-size: 17px;
+            font-weight: 800;
+            color: #1d4ed8;
+        }
+
+        /* =========================
+           STATUS
+        ========================== */
+
+        .status-box {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* =========================
+           NOTES
+        ========================== */
+
+        .notes {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .notes h3 {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .notes p {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 650px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .invoice {
+                padding: 22px;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .invoice-title {
+                text-align: left;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .summary {
+                width: 100%;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .action-buttons {
+                width: 100%;
+            }
+
+            .action-buttons .btn {
+                flex: 1;
+                text-align: center;
+            }
+
+        }
+
+        /* =========================
+           PRINT / SAVE PDF
+        ========================== */
+
+        @media print {
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            .invoice {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 20px;
+            }
+
+            .page {
+                max-width: none;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+
+    <!-- =========================
+         ACTIONS
+    ========================== -->
+
+    <div class="actions">
+
+        <a
+            href="/invoices"
+            class="back-btn"
+        >
+            ← Back to Invoices
+        </a>
+
+
+        <div class="action-buttons">
+
+            <!-- SAVE PDF -->
+
+            <button
+                type="button"
+                class="btn btn-pdf"
+                onclick="savePDF()"
+            >
+                📄 Save PDF
+            </button>
+
+
+            <!-- WHATSAPP -->
+
+            <button
+                type="button"
+                class="btn btn-whatsapp"
+                onclick="shareWhatsApp()"
+            >
+                💬 WhatsApp
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         INVOICE
+    ========================== -->
+
+    <div class="invoice">
+
+
+        <!-- HEADER -->
+
+        <div class="invoice-header">
+
+            <div>
+
+                <div class="company-name">
+                    🎧 Sound Billing
+                </div>
+
+                <div class="company-subtitle">
+                    Sound & Event Rental Services
+                </div>
+
+            </div>
+
+
+            <div class="invoice-title">
+
+                <h1>
+                    INVOICE
+                </h1>
+
+                <div class="invoice-number">
+                    <%= invoice.invoiceNumber %>
+                </div>
+
+                <div class="company-subtitle">
+
+                    Date:
+
+                    <%= new Date(
+                        invoice.createdAt
+                    ).toLocaleDateString("en-IN") %>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             CUSTOMER + EVENT
+        ========================== -->
+
+        <div class="info-section">
+
+
+            <!-- CUSTOMER -->
+
+            <div class="info-box">
+
+                <h3>
+                    Bill To
+                </h3>
+
+                <strong>
+                    <%= invoice.booking?.customer?.name || "Unknown Customer" %>
+                </strong>
+
+
+                <% if (invoice.booking?.customer?.phone) { %>
+
+                    <p>
+                        📞
+                        <%= invoice.booking.customer.phone %>
+                    </p>
+
+                <% } %>
+
+
+                <% if (invoice.booking?.customer?.address) { %>
+
+                    <p>
+                        <%= invoice.booking.customer.address %>
+                    </p>
+
+                <% } %>
+
+            </div>
+
+
+            <!-- EVENT -->
+
+            <div class="info-box">
+
+                <h3>
+                    Event Details
+                </h3>
+
+                <strong>
+                    <%= invoice.booking?.eventType || "-" %>
+                </strong>
+
+
+                <% if (invoice.booking?.eventDate) { %>
+
+                    <p>
+                        📅
+
+                        <%= new Date(
+                            invoice.booking.eventDate
+                        ).toLocaleDateString("en-IN") %>
+                    </p>
+
+                <% } %>
+
+
+                <% if (invoice.booking?.location) { %>
+
+                    <p>
+                        📍
+                        <%= invoice.booking.location %>
+                    </p>
+
+                <% } %>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             CHARGES
+        ========================== -->
+
+        <table class="invoice-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Description
+                    </th>
+
+                    <th style="text-align:right;">
+                        Amount
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                <% if (invoice.rentalAmount > 0) { %>
+
+                    <tr>
+
+                        <td>
+                            Equipment / Rental
+                        </td>
+
+                        <td class="amount">
+
+                            ₹ <%= Number(
+                                invoice.rentalAmount
+                            ).toLocaleString("en-IN") %>
+
+                        </td>
+
+                    </tr>
+
+                <% } %>
+
+
+                <% if (invoice.transportCharge > 0) { %>
+
+                    <tr>
+
+                        <td>
+                            Transport Charge
+                        </td>
+
+                        <td class="amount">
+
+                            ₹ <%= Number(
+                                invoice.transportCharge
+                            ).toLocaleString("en-IN") %>
+
+                        </td>
+
+                    </tr>
+
+                <% } %>
+
+
+                <% if (invoice.labourCharge > 0) { %>
+
+                    <tr>
+
+                        <td>
+                            Labour Charge
+                        </td>
+
+                        <td class="amount">
+
+                            ₹ <%= Number(
+                                invoice.labourCharge
+                            ).toLocaleString("en-IN") %>
+
+                        </td>
+
+                    </tr>
+
+                <% } %>
+
+
+                <% if (invoice.extraCharge > 0) { %>
+
+                    <tr>
+
+                        <td>
+                            Extra Charge
+                        </td>
+
+                        <td class="amount">
+
+                            ₹ <%= Number(
+                                invoice.extraCharge
+                            ).toLocaleString("en-IN") %>
+
+                        </td>
+
+                    </tr>
+
+                <% } %>
+
+
+                <% if (invoice.discount > 0) { %>
+
+                    <tr>
+
+                        <td>
+                            Discount
+                        </td>
+
+                        <td
+                            class="amount"
+                            style="color:#dc2626;"
+                        >
+
+                            - ₹ <%= Number(
+                                invoice.discount
+                            ).toLocaleString("en-IN") %>
+
+                        </td>
+
+                    </tr>
+
+                <% } %>
+
+
+            </tbody>
+
+        </table>
+
+
+        <!-- =========================
+             SUMMARY
+        ========================== -->
+
+        <div class="summary-section">
+
+            <div class="summary">
+
+
+                <div class="summary-row total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <span>
+
+                        ₹ <%= Number(
+                            invoice.totalAmount || 0
+                        ).toLocaleString("en-IN") %>
+
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row advance">
+
+                    <span>
+                        Advance Paid
+                    </span>
+
+                    <span>
+
+                        ₹ <%= Number(
+                            invoice.advance || 0
+                        ).toLocaleString("en-IN") %>
+
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row balance">
+
+                    <span>
+                        Balance
+                    </span>
+
+                    <span>
+
+                        ₹ <%= Number(
+                            invoice.balance || 0
+                        ).toLocaleString("en-IN") %>
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             PAYMENT STATUS
+        ========================== -->
+
+        <div class="status-box">
+
+            <% if (invoice.paymentStatus === "Paid") { %>
+
+                <span class="status paid">
+                    ✓ PAID
+                </span>
+
+            <% } else if (
+                invoice.paymentStatus === "Partial"
+            ) { %>
+
+                <span class="status partial">
+                    PARTIAL PAYMENT
+                </span>
+
+            <% } else { %>
+
+                <span class="status pending">
+                    PAYMENT PENDING
+                </span>
+
+            <% } %>
+
+        </div>
+
+
+        <!-- =========================
+             NOTES
+        ========================== -->
+
+        <% if (invoice.notes) { %>
+
+            <div class="notes">
+
+                <h3>
+                    Notes
+                </h3>
+
+                <p>
+                    <%= invoice.notes %>
+                </p>
+
+            </div>
+
+        <% } %>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <div class="footer">
+
+            Thank you for choosing Sound Billing.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       SAVE PDF
+    ========================== */
+
+    function savePDF() {
+
+        window.print();
+
+    }
+
+
+    /* =========================
+       WHATSAPP SHARE
+    ========================== */
+
+    function shareWhatsApp() {
+
+        const invoiceNumber =
+            "<%= invoice.invoiceNumber %>";
+
+        const customerName =
+            "<%= invoice.booking?.customer?.name || 'Customer' %>";
+
+        const eventType =
+            "<%= invoice.booking?.eventType || '' %>";
+
+        const total =
+            "<%= Number(invoice.totalAmount || 0).toLocaleString('en-IN') %>";
+
+        const advance =
+            "<%= Number(invoice.advance || 0).toLocaleString('en-IN') %>";
+
+        const balance =
+            "<%= Number(invoice.balance || 0).toLocaleString('en-IN') %>";
+
+
+        const message =
+
+            "Hello " +
+            customerName +
+            ",%0A%0A" +
+
+            "Invoice from Sound Billing%0A%0A" +
+
+            "Invoice No: " +
+            invoiceNumber +
+            "%0A" +
+
+            "Event: " +
+            eventType +
+            "%0A" +
+
+            "Total: ₹ " +
+            total +
+            "%0A" +
+
+            "Advance Paid: ₹ " +
+            advance +
+            "%0A" +
+
+            "Balance: ₹ " +
+            balance +
+            "%0A%0A" +
+
+            "Thank you for choosing Sound Billing.";
+
+
+        const whatsappURL =
+            "https://wa.me/?text=" +
+            message;
+
+
+        window.open(
+            whatsappURL,
+            "_blank"
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

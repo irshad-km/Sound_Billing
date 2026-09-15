@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Invoices - Sound Billing</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 20px 15px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+            padding: 10px 12px 25px;
+        }
+
+        .nav-link {
+            display: block;
+            text-decoration: none;
+            color: #d1d5db;
+            padding: 12px 14px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            transition: 0.2s;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        /* =========================
+           SUMMARY CARDS
+        ========================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .summary-card .label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .summary-card.total .value {
+            color: #2563eb;
+        }
+
+        .summary-card.paid .value {
+            color: #16a34a;
+        }
+
+        .summary-card.partial .value {
+            color: #d97706;
+        }
+
+        .summary-card.pending .value {
+            color: #dc2626;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f9fafb;
+            color: #374151;
+            font-size: 13px;
+        }
+
+        tr:hover td {
+            background: #f9fafb;
+        }
+
+        .invoice-number {
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* =========================
+           ACTION BUTTONS
+        ========================= */
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn-small {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-view {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-view:hover {
+            background: #bae6fd;
+        }
+
+        .btn-edit {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .btn-edit:hover {
+            background: #fde68a;
+        }
+
+        .btn-cancel {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .btn-cancel:hover {
+            background: #fecaca;
+        }
+
+        /* =========================
+           NORMAL MODALS
+        ========================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 850px;
+            background: white;
+            border-radius: 14px;
+            margin: 30px auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            border: none;
+            background: transparent;
+            font-size: 25px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close-btn:hover {
+            color: #111827;
+        }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #2563eb;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .calculation-box {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .calculation-row.total {
+            border-top: 1px solid #d1d5db;
+            margin-top: 8px;
+            padding-top: 12px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .calculation-row.balance {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .modal-footer {
+            padding: 16px 22px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            border: none;
+            background: #e5e7eb;
+            color: #374151;
+            padding: 10px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-save {
+            border: none;
+            background: #16a34a;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-save:hover {
+            background: #15803d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 45px 20px;
+            color: #6b7280;
+        }
+
+        /* =========================
+           DELETE CONFIRMATION
+        ========================= */
+
+        .delete-modal-content {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 100px auto;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            animation: deletePopup 0.18s ease-out;
+        }
+
+        @keyframes deletePopup {
+            from {
+                transform: scale(0.92);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .delete-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: #fee2e2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .delete-modal-content h2 {
+            font-size: 21px;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .delete-message {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .delete-message strong {
+            color: #111827;
+        }
+
+        .delete-warning {
+            margin-top: 8px;
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .delete-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .delete-cancel-btn {
+            border: none;
+            background: #e5e7eb;
+            color: #374151;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .delete-cancel-btn:hover {
+            background: #d1d5db;
+        }
+
+        .delete-confirm-btn {
+            border: none;
+            background: #dc2626;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .delete-confirm-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                min-height: auto;
+            }
+
+            .logo {
+                text-align: center;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+
+            .sidebar nav {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 5px;
+            }
+
+            .nav-link {
+                margin-bottom: 0;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .delete-modal-content {
+                margin: 60px auto;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            .sidebar nav {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 8px;
+            }
+
+            .modal-content {
+                margin: 10px auto;
+            }
+
+            .modal-body {
+                padding: 16px;
+            }
+
+            .delete-modal-content {
+                margin: 30px auto;
+                padding: 24px 18px;
+            }
+
+            .delete-actions {
+                flex-direction: column;
+            }
+
+            .delete-cancel-btn,
+            .delete-confirm-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+<%- include("partials/sidebar") %>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div class="page-title">
+
+                <h1>
+                    Invoices
+                </h1>
+
+                <p>
+                    Manage invoices, payments and outstanding balances.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="openAddInvoiceModal()"
+            >
+                + Create Invoice
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
+
+        <%
+            const totalInvoices = invoices.length;
+
+            const paidInvoices = invoices.filter(
+                invoice => invoice.paymentStatus === "Paid"
+            ).length;
+
+            const partialInvoices = invoices.filter(
+                invoice => invoice.paymentStatus === "Partial"
+            ).length;
+
+            const pendingInvoices = invoices.filter(
+                invoice => invoice.paymentStatus === "Pending"
+            ).length;
+        %>
+
+
+        <div class="summary-grid">
+
+            <div class="summary-card total">
+
+                <div class="label">
+                    Total Invoices
+                </div>
+
+                <div class="value">
+                    <%= totalInvoices %>
+                </div>
+
+            </div>
+
+
+            <div class="summary-card paid">
+
+                <div class="label">
+                    Paid
+                </div>
+
+                <div class="value">
+                    <%= paidInvoices %>
+                </div>
+
+            </div>
+
+
+            <div class="summary-card partial">
+
+                <div class="label">
+                    Partial
+                </div>
+
+                <div class="value">
+                    <%= partialInvoices %>
+                </div>
+
+            </div>
+
+
+            <div class="summary-card pending">
+
+                <div class="label">
+                    Pending
+                </div>
+
+                <div class="value">
+                    <%= pendingInvoices %>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             INVOICE TABLE
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h2>
+                    Invoice List
+                </h2>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <% if (invoices.length === 0) { %>
+
+                    <div class="empty-state">
+
+                        <h3>
+                            No invoices found
+                        </h3>
+
+                        <p style="margin-top: 8px;">
+                            Create your first invoice using the button above.
+                        </p>
+
+                    </div>
+
+                <% } else { %>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Invoice
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Event
+                                </th>
+
+                                <th>
+                                    Rental
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <th>
+                                    Advance
+                                </th>
+
+                                <th>
+                                    Balance
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <% invoices.forEach(invoice => { %>
+
+                                <tr>
+
+                                    <!-- Invoice -->
+
+                                    <td>
+
+                                        <div class="invoice-number">
+                                            <%= invoice.invoiceNumber %>
+                                        </div>
+
+                                        <div class="muted">
+
+                                            <%= new Date(
+                                                invoice.createdAt
+                                            ).toLocaleDateString("en-IN") %>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- Customer -->
+
+                                    <td>
+
+                                        <% if (
+                                            invoice.booking &&
+                                            invoice.booking.customer
+                                        ) { %>
+
+                                            <strong>
+                                                <%= invoice.booking.customer.name %>
+                                            </strong>
+
+                                            <% if (
+                                                invoice.booking.customer.phone
+                                            ) { %>
+
+                                                <div class="muted">
+                                                    <%= invoice.booking.customer.phone %>
+                                                </div>
+
+                                            <% } %>
+
+                                        <% } else { %>
+
+                                            <span class="muted">
+                                                Customer unavailable
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+
+                                    <!-- Event -->
+
+                                    <td>
+
+                                        <% if (invoice.booking) { %>
+
+                                            <strong>
+                                                <%= invoice.booking.eventType %>
+                                            </strong>
+
+                                            <div class="muted">
+
+                                                <%= new Date(
+                                                    invoice.booking.eventDate
+                                                ).toLocaleDateString("en-IN") %>
+
+                                                <% if (
+                                                    invoice.booking.location
+                                                ) { %>
+
+                                                    •
+                                                    <%= invoice.booking.location %>
+
+                                                <% } %>
+
+                                            </div>
+
+                                        <% } else { %>
+
+                                            <span class="muted">
+                                                Booking unavailable
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+
+                                    <!-- Rental -->
+
+                                    <td>
+
+                                        ₹<%= Number(
+                                            invoice.rentalAmount || 0
+                                        ).toLocaleString("en-IN") %>
+
+                                    </td>
+
+
+                                    <!-- Total -->
+
+                                    <td>
+
+                                        <strong>
+
+                                            ₹<%= Number(
+                                                invoice.totalAmount || 0
+                                            ).toLocaleString("en-IN") %>
+
+                                        </strong>
+
+                                    </td>
+
+
+                                    <!-- Advance -->
+
+                                    <td>
+
+                                        ₹<%= Number(
+                                            invoice.advance || 0
+                                        ).toLocaleString("en-IN") %>
+
+                                    </td>
+
+
+                                    <!-- Balance -->
+
+                                    <td>
+
+                                        <strong>
+
+                                            ₹<%= Number(
+                                                invoice.balance || 0
+                                            ).toLocaleString("en-IN") %>
+
+                                        </strong>
+
+                                    </td>
+
+
+                                    <!-- Status -->
+
+                                    <td>
+
+                                        <% if (
+                                            invoice.paymentStatus === "Paid"
+                                        ) { %>
+
+                                            <span class="status status-paid">
+                                                Paid
+                                            </span>
+
+                                        <% } else if (
+                                            invoice.paymentStatus === "Partial"
+                                        ) { %>
+
+                                            <span class="status status-partial">
+                                                Partial
+                                            </span>
+
+                                        <% } else { %>
+
+                                            <span class="status status-pending">
+                                                Pending
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+
+                                    <!-- ACTIONS -->
+
+                                    <td>
+
+                                        <div class="actions">
+
+                                            <!-- VIEW -->
+
+                                            <a
+                                                href="/invoices/view/<%= invoice._id %>"
+                                                class="btn-small btn-view"
+                                            >
+                                                👁 View
+                                            </a>
+
+
+                                            <!-- EDIT -->
+
+                                            <button
+                                                type="button"
+                                                class="btn-small btn-edit"
+                                                onclick="openEditInvoiceModal('<%= invoice._id %>')"
+                                            >
+                                                ✏ Edit
+                                            </button>
+
+
+                                            <!-- DELETE -->
+
+                                            <form
+                                                id="deleteForm-<%= invoice._id %>"
+                                                action="/invoices/delete/<%= invoice._id %>"
+                                                method="POST"
+                                                style="display:inline;"
+                                            >
+
+                                                <button
+                                                    type="button"
+                                                    class="btn-small btn-cancel"
+                                                    onclick="openDeleteModal(
+                                                        '<%= invoice._id %>',
+                                                        '<%= invoice.invoiceNumber %>'
+                                                    )"
+                                                >
+                                                    🗑 Delete
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        </tbody>
+
+                    </table>
+
+                <% } %>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         ADD INVOICE MODAL
+    ====================================================== -->
+
+    <div
+        id="addInvoiceModal"
+        class="modal"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Create Invoice
+                </h2>
+
+                <button
+                    type="button"
+                    class="close-btn"
+                    onclick="closeAddInvoiceModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form
+                action="/invoices/add"
+                method="POST"
+            >
+
+                <div class="modal-body">
+
+                    <div class="form-grid">
+
+                        <!-- Booking -->
+
+                        <div class="form-group full">
+
+                            <label>
+                                Event / Booking
+                            </label>
+
+                            <select
+                                name="booking"
+                                id="addBooking"
+                                required
+                            >
+
+                                <option value="">
+                                    Select booking
+                                </option>
+
+                                <% bookings.forEach(booking => { %>
+
+                                    <option
+                                        value="<%= booking._id %>"
+                                    >
+
+                                        <%= booking.eventType %>
+
+                                        -
+
+                                        <%= booking.customer
+                                            ? booking.customer.name
+                                            : "Unknown Customer" %>
+
+                                        -
+
+                                        <%= new Date(
+                                            booking.eventDate
+                                        ).toLocaleDateString("en-IN") %>
+
+                                    </option>
+
+                                <% }) %>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Rental -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Equipment / Rental Amount
+                            </label>
+
+                            <input
+                                type="number"
+                                name="rentalAmount"
+                                id="addRentalAmount"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateInvoice()"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Transport -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Transport Charge
+                            </label>
+
+                            <input
+                                type="number"
+                                name="transportCharge"
+                                id="addTransportCharge"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Labour -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Labour Charge
+                            </label>
+
+                            <input
+                                type="number"
+                                name="labourCharge"
+                                id="addLabourCharge"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Extra -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Extra Charge
+                            </label>
+
+                            <input
+                                type="number"
+                                name="extraCharge"
+                                id="addExtraCharge"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Discount -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Discount
+                            </label>
+
+                            <input
+                                type="number"
+                                name="discount"
+                                id="addDiscount"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Advance -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Advance Paid
+                            </label>
+
+                            <input
+                                type="number"
+                                name="advance"
+                                id="addAdvance"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Notes -->
+
+                        <div class="form-group full">
+
+                            <label>
+                                Notes
+                            </label>
+
+                            <textarea
+                                name="notes"
+                                placeholder="Optional notes..."
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Calculation -->
+
+                    <div class="calculation-box">
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Equipment / Rental
+                            </span>
+
+                            <strong id="addRentalDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Transport
+                            </span>
+
+                            <strong id="addTransportDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Labour
+                            </span>
+
+                            <strong id="addLabourDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Extra
+                            </span>
+
+                            <strong id="addExtraDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Discount
+                            </span>
+
+                            <strong id="addDiscountDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row total">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong id="addTotalDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Advance
+                            </span>
+
+                            <strong id="addAdvanceDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row balance">
+
+                            <span>
+                                Balance
+                            </span>
+
+                            <strong id="addBalanceDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        onclick="closeAddInvoiceModal()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn-save"
+                    >
+                        Save Invoice
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         EDIT INVOICE MODAL
+    ====================================================== -->
+
+    <div
+        id="editInvoiceModal"
+        class="modal"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Edit Invoice
+                </h2>
+
+                <button
+                    type="button"
+                    class="close-btn"
+                    onclick="closeEditInvoiceModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form
+                id="editInvoiceForm"
+                method="POST"
+            >
+
+                <div class="modal-body">
+
+                    <div class="form-grid">
+
+                        <!-- Booking -->
+
+                        <div class="form-group full">
+
+                            <label>
+                                Event / Booking
+                            </label>
+
+                            <select
+                                name="booking"
+                                id="editBooking"
+                                required
+                            >
+
+                                <option value="">
+                                    Select booking
+                                </option>
+
+                                <% bookings.forEach(booking => { %>
+
+                                    <option
+                                        value="<%= booking._id %>"
+                                    >
+
+                                        <%= booking.eventType %>
+
+                                        -
+
+                                        <%= booking.customer
+                                            ? booking.customer.name
+                                            : "Unknown Customer" %>
+
+                                        -
+
+                                        <%= new Date(
+                                            booking.eventDate
+                                        ).toLocaleDateString("en-IN") %>
+
+                                    </option>
+
+                                <% }) %>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Rental -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Equipment / Rental Amount
+                            </label>
+
+                            <input
+                                type="number"
+                                name="rentalAmount"
+                                id="editRentalAmount"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateEditInvoice()"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Transport -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Transport Charge
+                            </label>
+
+                            <input
+                                type="number"
+                                name="transportCharge"
+                                id="editTransportCharge"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateEditInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Labour -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Labour Charge
+                            </label>
+
+                            <input
+                                type="number"
+                                name="labourCharge"
+                                id="editLabourCharge"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateEditInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Extra -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Extra Charge
+                            </label>
+
+                            <input
+                                type="number"
+                                name="extraCharge"
+                                id="editExtraCharge"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateEditInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Discount -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Discount
+                            </label>
+
+                            <input
+                                type="number"
+                                name="discount"
+                                id="editDiscount"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateEditInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Advance -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Advance Paid
+                            </label>
+
+                            <input
+                                type="number"
+                                name="advance"
+                                id="editAdvance"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                oninput="calculateEditInvoice()"
+                            >
+
+                        </div>
+
+
+                        <!-- Notes -->
+
+                        <div class="form-group full">
+
+                            <label>
+                                Notes
+                            </label>
+
+                            <textarea
+                                name="notes"
+                                id="editNotes"
+                                placeholder="Optional notes..."
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Calculation -->
+
+                    <div class="calculation-box">
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Equipment / Rental
+                            </span>
+
+                            <strong id="editRentalDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Transport
+                            </span>
+
+                            <strong id="editTransportDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Labour
+                            </span>
+
+                            <strong id="editLabourDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Extra
+                            </span>
+
+                            <strong id="editExtraDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Discount
+                            </span>
+
+                            <strong id="editDiscountDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row total">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong id="editTotalDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row">
+
+                            <span>
+                                Advance
+                            </span>
+
+                            <strong id="editAdvanceDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calculation-row balance">
+
+                            <span>
+                                Balance
+                            </span>
+
+                            <strong id="editBalanceDisplay">
+                                ₹0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        onclick="closeEditInvoiceModal()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn-save"
+                    >
+                        Update Invoice
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DELETE CONFIRMATION MODAL
+    ====================================================== -->
+
+    <div
+        id="deleteConfirmModal"
+        class="modal"
+    >
+
+        <div class="delete-modal-content">
+
+            <div class="delete-icon">
+                🗑️
+            </div>
+
+
+            <h2>
+                Delete Invoice?
+            </h2>
+
+
+            <p class="delete-message">
+
+                Are you sure you want to delete
+
+                <strong id="deleteInvoiceNumber"></strong>?
+
+            </p>
+
+
+            <p class="delete-warning">
+                This action cannot be undone.
+            </p>
+
+
+            <div class="delete-actions">
+
+                <button
+                    type="button"
+                    class="delete-cancel-btn"
+                    onclick="closeDeleteModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="button"
+                    class="delete-confirm-btn"
+                    onclick="confirmDelete()"
+                >
+                    🗑 Delete
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        /* =========================
+           MONEY
+        ========================= */
+
+        function money(value) {
+
+            return "₹" + Number(
+                value || 0
+            ).toLocaleString("en-IN");
+
+        }
+
+
+        /* =========================
+           ADD MODAL
+        ========================= */
+
+        function openAddInvoiceModal() {
+
+            document
+                .getElementById("addInvoiceModal")
+                .classList.add("show");
+
+            calculateInvoice();
+
+        }
+
+
+        function closeAddInvoiceModal() {
+
+            document
+                .getElementById("addInvoiceModal")
+                .classList.remove("show");
+
+        }
+
+
+        /* =========================
+           ADD CALCULATION
+        ========================= */
+
+        function calculateInvoice() {
+
+            const rental = Number(
+                document.getElementById(
+                    "addRentalAmount"
+                ).value
+            ) || 0;
+
+
+            const transport = Number(
+                document.getElementById(
+                    "addTransportCharge"
+                ).value
+            ) || 0;
+
+
+            const labour = Number(
+                document.getElementById(
+                    "addLabourCharge"
+                ).value
+            ) || 0;
+
+
+            const extra = Number(
+                document.getElementById(
+                    "addExtraCharge"
+                ).value
+            ) || 0;
+
+
+            const discount = Number(
+                document.getElementById(
+                    "addDiscount"
+                ).value
+            ) || 0;
+
+
+            const advance = Number(
+                document.getElementById(
+                    "addAdvance"
+                ).value
+            ) || 0;
+
+
+            const total = Math.max(
+                rental +
+                transport +
+                labour +
+                extra -
+                discount,
+                0
+            );
+
+
+            const balance = Math.max(
+                total - advance,
+                0
+            );
+
+
+            document.getElementById(
+                "addRentalDisplay"
+            ).textContent = money(rental);
+
+
+            document.getElementById(
+                "addTransportDisplay"
+            ).textContent = money(transport);
+
+
+            document.getElementById(
+                "addLabourDisplay"
+            ).textContent = money(labour);
+
+
+            document.getElementById(
+                "addExtraDisplay"
+            ).textContent = money(extra);
+
+
+            document.getElementById(
+                "addDiscountDisplay"
+            ).textContent = money(discount);
+
+
+            document.getElementById(
+                "addTotalDisplay"
+            ).textContent = money(total);
+
+
+            document.getElementById(
+                "addAdvanceDisplay"
+            ).textContent = money(advance);
+
+
+            document.getElementById(
+                "addBalanceDisplay"
+            ).textContent = money(balance);
+
+        }
+
+
+        /* =========================
+           INVOICE DATA
+        ========================= */
+
+        const invoiceData = {
+
+            <% invoices.forEach((invoice, index) => { %>
+
+                "<%= invoice._id %>": {
+
+                    id:
+                        "<%= invoice._id %>",
+
+                    invoiceNumber:
+                        "<%= invoice.invoiceNumber %>",
+
+                    booking:
+                        "<%= invoice.booking
+                            ? invoice.booking._id
+                            : "" %>",
+
+                    rentalAmount:
+                        <%= Number(
+                            invoice.rentalAmount || 0
+                        ) %>,
+
+                    transportCharge:
+                        <%= Number(
+                            invoice.transportCharge || 0
+                        ) %>,
+
+                    labourCharge:
+                        <%= Number(
+                            invoice.labourCharge || 0
+                        ) %>,
+
+                    extraCharge:
+                        <%= Number(
+                            invoice.extraCharge || 0
+                        ) %>,
+
+                    discount:
+                        <%= Number(
+                            invoice.discount || 0
+                        ) %>,
+
+                    advance:
+                        <%= Number(
+                            invoice.advance || 0
+                        ) %>,
+
+                    notes:
+                        <%- JSON.stringify(
+                            invoice.notes || ""
+                        ) %>
+
+                }
+
+                <%= index < invoices.length - 1 ? "," : "" %>
+
+            <% }) %>
+
+        };
+
+
+        /* =========================
+           EDIT MODAL
+        ========================= */
+
+        function openEditInvoiceModal(id) {
+
+            const invoice = invoiceData[id];
+
+
+            if (!invoice) {
+
+                alert("Invoice data not found.");
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "editInvoiceForm"
+            ).action =
+                "/invoices/edit/" + invoice.id;
+
+
+            document.getElementById(
+                "editBooking"
+            ).value =
+                invoice.booking;
+
+
+            document.getElementById(
+                "editRentalAmount"
+            ).value =
+                invoice.rentalAmount;
+
+
+            document.getElementById(
+                "editTransportCharge"
+            ).value =
+                invoice.transportCharge;
+
+
+            document.getElementById(
+                "editLabourCharge"
+            ).value =
+                invoice.labourCharge;
+
+
+            document.getElementById(
+                "editExtraCharge"
+            ).value =
+                invoice.extraCharge;
+
+
+            document.getElementById(
+                "editDiscount"
+            ).value =
+                invoice.discount;
+
+
+            document.getElementById(
+                "editAdvance"
+            ).value =
+                invoice.advance;
+
+
+            document.getElementById(
+                "editNotes"
+            ).value =
+                invoice.notes;
+
+
+            document
+                .getElementById("editInvoiceModal")
+                .classList.add("show");
+
+
+            calculateEditInvoice();
+
+        }
+
+
+        function closeEditInvoiceModal() {
+
+            document
+                .getElementById("editInvoiceModal")
+                .classList.remove("show");
+
+        }
+
+
+        /* =========================
+           EDIT CALCULATION
+        ========================= */
+
+        function calculateEditInvoice() {
+
+            const rental = Number(
+                document.getElementById(
+                    "editRentalAmount"
+                ).value
+            ) || 0;
+
+
+            const transport = Number(
+                document.getElementById(
+                    "editTransportCharge"
+                ).value
+            ) || 0;
+
+
+            const labour = Number(
+                document.getElementById(
+                    "editLabourCharge"
+                ).value
+            ) || 0;
+
+
+            const extra = Number(
+                document.getElementById(
+                    "editExtraCharge"
+                ).value
+            ) || 0;
+
+
+            const discount = Number(
+                document.getElementById(
+                    "editDiscount"
+                ).value
+            ) || 0;
+
+
+            const advance = Number(
+                document.getElementById(
+                    "editAdvance"
+                ).value
+            ) || 0;
+
+
+            const total = Math.max(
+                rental +
+                transport +
+                labour +
+                extra -
+                discount,
+                0
+            );
+
+
+            const balance = Math.max(
+                total - advance,
+                0
+            );
+
+
+            document.getElementById(
+                "editRentalDisplay"
+            ).textContent = money(rental);
+
+
+            document.getElementById(
+                "editTransportDisplay"
+            ).textContent = money(transport);
+
+
+            document.getElementById(
+                "editLabourDisplay"
+            ).textContent = money(labour);
+
+
+            document.getElementById(
+                "editExtraDisplay"
+            ).textContent = money(extra);
+
+
+            document.getElementById(
+                "editDiscountDisplay"
+            ).textContent = money(discount);
+
+
+            document.getElementById(
+                "editTotalDisplay"
+            ).textContent = money(total);
+
+
+            document.getElementById(
+                "editAdvanceDisplay"
+            ).textContent = money(advance);
+
+
+            document.getElementById(
+                "editBalanceDisplay"
+            ).textContent = money(balance);
+
+        }
+
+
+        /* =========================
+           DELETE CONFIRMATION
+        ========================= */
+
+        let deleteInvoiceId = null;
+
+
+        function openDeleteModal(
+            id,
+            invoiceNumber
+        ) {
+
+            deleteInvoiceId = id;
+
+
+            document.getElementById(
+                "deleteInvoiceNumber"
+            ).textContent = invoiceNumber;
+
+
+            document
+                .getElementById("deleteConfirmModal")
+                .classList.add("show");
+
+        }
+
+
+        function closeDeleteModal() {
+
+            deleteInvoiceId = null;
+
+
+            document
+                .getElementById("deleteConfirmModal")
+                .classList.remove("show");
+
+        }
+
+
+        function confirmDelete() {
+
+            if (!deleteInvoiceId) {
+                return;
+            }
+
+
+            const form = document.getElementById(
+                "deleteForm-" + deleteInvoiceId
+            );
+
+
+            if (form) {
+
+                form.submit();
+
+            }
+
+        }
+
+
+        /* =========================
+           OUTSIDE CLICK
+        ========================= */
+
+        document
+            .getElementById("addInvoiceModal")
+            .addEventListener(
+                "click",
+                function(event) {
+
+                    if (event.target === this) {
+
+                        closeAddInvoiceModal();
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById("editInvoiceModal")
+            .addEventListener(
+                "click",
+                function(event) {
+
+                    if (event.target === this) {
+
+                        closeEditInvoiceModal();
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById("deleteConfirmModal")
+            .addEventListener(
+                "click",
+                function(event) {
+
+                    if (event.target === this) {
+
+                        closeDeleteModal();
+
+                    }
+
+                }
+            );
+
+
+        /* =========================
+           ESC KEY
+        ========================= */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Escape") {
+
+                    closeAddInvoiceModal();
+
+                    closeEditInvoiceModal();
+
+                    closeDeleteModal();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

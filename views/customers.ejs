@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sound Billing | Customers</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+
+        /* =========================
+           ONLY ACTION BUTTON STYLES
+        ========================== */
+
+        .action-btn {
+            border: none;
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-right: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .edit-btn {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .edit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+
+        /* =========================
+           DELETE CONFIRMATION POPUP
+        ========================== */
+
+        .delete-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-modal.show {
+            display: flex;
+        }
+
+        .delete-modal-content {
+            width: 360px;
+            max-width: calc(100% - 30px);
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .delete-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .delete-modal-content h3 {
+            margin: 0 0 8px;
+        }
+
+        .delete-modal-content p {
+            margin: 0 0 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .delete-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .delete-cancel-btn {
+            border: none;
+            background: #e5e7eb;
+            color: #333;
+            padding: 9px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .delete-confirm-btn {
+            border: none;
+            background: #dc2626;
+            color: #fff;
+            padding: 9px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .delete-confirm-btn:hover {
+            background: #b91c1c;
+        }
+
+
+        /* =========================
+           EDIT CUSTOMER POPUP
+           SAME ALIGNMENT AS ADD
+        ========================== */
+
+        .edit-modal-content {
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .edit-modal-content .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .edit-modal-content .form-group {
+            width: 100%;
+        }
+
+        .edit-modal-content .form-group input,
+        .edit-modal-content .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .edit-modal-content .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Notes full width */
+        .edit-modal-content .form-group:last-child {
+            grid-column: 1 / -1;
+        }
+
+
+        /* Mobile */
+
+        @media (max-width: 700px) {
+
+            .edit-modal-content .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .edit-modal-content .form-group:last-child {
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="app">
+
+        <!-- Sidebar -->
+
+       <%- include("partials/sidebar") %>
+
+
+            <!-- Customer Panel -->
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Customer List
+                        </h2>
+
+                        <p class="panel-subtitle">
+                            All registered customers
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="primary-btn"
+                        onclick="openCustomerModal()">
+
+                        + Add Customer
+
+                    </button>
+
+                </div>
+
+
+                <!-- Customer Table -->
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Name
+                                </th>
+
+                                <th>
+                                    Phone
+                                </th>
+
+                                <th>
+                                    Email
+                                </th>
+
+                                <th>
+                                    Place
+                                </th>
+
+                                <th>
+                                    Address
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <% if (customers && customers.length > 0) { %>
+
+                                <% customers.forEach(customer => { %>
+
+                                    <tr>
+
+                                        <td>
+
+                                            <strong>
+                                                <%= customer.name %>
+                                            </strong>
+
+                                        </td>
+
+
+                                        <td>
+                                            <%= customer.phone %>
+                                        </td>
+
+
+                                        <td>
+                                            <%= customer.email || "-" %>
+                                        </td>
+
+
+                                        <td>
+                                            <%= customer.place || "-" %>
+                                        </td>
+
+
+                                        <td>
+                                            <%= customer.address || "-" %>
+                                        </td>
+
+
+                                        <td>
+
+                                            <!-- EDIT BUTTON -->
+
+                                            <button
+                                                type="button"
+                                                class="action-btn edit-btn"
+                                                onclick='openEditCustomerModal(<%- JSON.stringify(customer) %>)'>
+
+                                                Edit
+
+                                            </button>
+
+
+                                            <!-- DELETE BUTTON -->
+
+                                            <button
+                                                type="button"
+                                                class="action-btn delete-btn"
+                                                onclick="openDeleteModal('<%= customer.id %>', '<%= customer.name.replace(/'/g, "\\'") %>')">
+
+                                                Delete
+
+                                            </button>
+
+                                        </td>
+
+                                    </tr>
+
+                                <% }) %>
+
+
+                            <% } else { %>
+
+                                <tr>
+
+                                    <td
+                                        colspan="6"
+                                        style="text-align:center; padding:30px;">
+
+                                        No customers found.
+
+                                    </td>
+
+                                </tr>
+
+                            <% } %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================
+         ADD CUSTOMER MODAL
+    ========================== -->
+
+    <div
+        id="customerModal"
+        class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        Add Customer
+                    </h2>
+
+                    <p>
+                        Create a new customer
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-btn"
+                    onclick="closeCustomerModal()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+            <!-- Customer Form -->
+
+            <form
+                action="/customers/add"
+                method="POST"
+                id="customerForm"
+                novalidate>
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Customer Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Enter customer name"
+                            maxlength="50">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone *
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="Enter phone number"
+                            maxlength="12">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Alternate Phone *
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="alternatePhone"
+                            placeholder="Enter alternate phone number"
+                            maxlength="12">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Optional"
+                            maxlength="80">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Place *
+                        </label>
+
+                        <input
+                            type="text"
+                            name="place"
+                            placeholder="Ponnani"
+                            maxlength="50">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Address
+                        </label>
+
+                        <input
+                            type="text"
+                            name="address"
+                            placeholder="Customer address"
+                            maxlength="150">
+
+                    </div>
+
+
+                    <div
+                        class="form-group"
+                        style="grid-column: 1 / -1;">
+
+                        <label>
+                            Notes
+                        </label>
+
+                        <textarea
+                            name="notes"
+                            rows="3"
+                            placeholder="Additional notes"
+                            maxlength="250"></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeCustomerModal()">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn">
+
+                        Save Customer
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         EDIT CUSTOMER MODAL
+    ========================== -->
+
+    <div
+        id="editCustomerModal"
+        class="modal">
+
+        <!-- ONLY CHANGE:
+             edit-modal-content class added -->
+
+        <div class="modal-content edit-modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        Edit Customer
+                    </h2>
+
+                    <p>
+                        Update customer information
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-btn"
+                    onclick="closeEditCustomerModal()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+            <!-- Edit Customer Form -->
+
+            <form
+                action=""
+                method="POST"
+                id="editCustomerForm"
+                novalidate>
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Customer Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            id="editName"
+                            placeholder="Enter customer name"
+                            maxlength="50">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone *
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            id="editPhone"
+                            placeholder="Enter phone number"
+                            maxlength="12">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Alternate Phone *
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="alternatePhone"
+                            id="editAlternatePhone"
+                            placeholder="Enter alternate phone number"
+                            maxlength="12">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            id="editEmail"
+                            placeholder="Optional"
+                            maxlength="80">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Place *
+                        </label>
+
+                        <input
+                            type="text"
+                            name="place"
+                            id="editPlace"
+                            placeholder="Ponnani"
+                            maxlength="50">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Address
+                        </label>
+
+                        <input
+                            type="text"
+                            name="address"
+                            id="editAddress"
+                            placeholder="Customer address"
+                            maxlength="150">
+
+                    </div>
+
+
+                    <div
+                        class="form-group"
+                        style="grid-column: 1 / -1;">
+
+                        <label>
+                            Notes
+                        </label>
+
+                        <textarea
+                            name="notes"
+                            id="editNotes"
+                            rows="3"
+                            placeholder="Additional notes"
+                            maxlength="250"></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeEditCustomerModal()">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn">
+
+                        Save Changes
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         DELETE CONFIRMATION MODAL
+    ========================== -->
+
+    <div
+        id="deleteModal"
+        class="delete-modal">
+
+        <div class="delete-modal-content">
+
+            <div class="delete-icon">
+                🗑️
+            </div>
+
+
+            <h3>
+                Delete Customer?
+            </h3>
+
+
+            <p id="deleteMessage">
+                Are you sure you want to delete this customer?
+            </p>
+
+
+            <div class="delete-modal-actions">
+
+                <button
+                    type="button"
+                    class="delete-cancel-btn"
+                    onclick="closeDeleteModal()">
+
+                    Cancel
+
+                </button>
+
+
+                <form
+                    id="deleteForm"
+                    action=""
+                    method="POST">
+
+                    <button
+                        type="submit"
+                        class="delete-confirm-btn">
+
+                        Delete
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =========================
+           ADD CUSTOMER MODAL
+        ========================== */
+
+        const customerModal =
+            document.getElementById("customerModal");
+
+        const customerForm =
+            document.getElementById("customerForm");
+
+
+        function openCustomerModal() {
+
+            customerModal.classList.add("show");
+
+        }
+
+
+        function closeCustomerModal() {
+
+            customerModal.classList.remove("show");
+
+            customerForm.reset();
+
+            clearAllErrors();
+
+        }
+
+
+        /* =========================
+           EDIT CUSTOMER MODAL
+        ========================== */
+
+        const editCustomerModal =
+            document.getElementById("editCustomerModal");
+
+        const editCustomerForm =
+            document.getElementById("editCustomerForm");
+
+
+        function openEditCustomerModal(customer) {
+
+            clearEditErrors();
+
+
+            // Fill customer data
+
+            document.getElementById("editName").value =
+                customer.name || "";
+
+
+            document.getElementById("editPhone").value =
+                customer.phone || "";
+
+
+            document.getElementById("editAlternatePhone").value =
+                customer.alternatePhone || "";
+
+
+            document.getElementById("editEmail").value =
+                customer.email || "";
+
+
+            document.getElementById("editPlace").value =
+                customer.place || "";
+
+
+            document.getElementById("editAddress").value =
+                customer.address || "";
+
+
+            document.getElementById("editNotes").value =
+                customer.notes || "";
+
+
+            // Set edit route
+
+            editCustomerForm.action =
+                "/customers/edit/" + customer._id;
+
+
+            // Open modal
+
+            editCustomerModal.classList.add("show");
+
+        }
+
+
+        function closeEditCustomerModal() {
+
+            editCustomerModal.classList.remove("show");
+
+            editCustomerForm.reset();
+
+            clearEditErrors();
+
+        }
+
+
+        /* =========================
+           DELETE CONFIRMATION
+        ========================== */
+
+        const deleteModal =
+            document.getElementById("deleteModal");
+
+        const deleteForm =
+            document.getElementById("deleteForm");
+
+        const deleteMessage =
+            document.getElementById("deleteMessage");
+
+
+        function openDeleteModal(id, name) {
+
+            deleteForm.action =
+                "/customers/delete/" + id;
+
+
+            deleteMessage.innerText =
+                'Are you sure you want to delete "' +
+                name +
+                '"?';
+
+
+            deleteModal.classList.add("show");
+
+        }
+
+
+        function closeDeleteModal() {
+
+            deleteModal.classList.remove("show");
+
+            deleteForm.action = "";
+
+        }
+
+
+        /* =========================
+           CLOSE MODALS ON OUTSIDE CLICK
+        ========================== */
+
+        window.addEventListener("click", function (event) {
+
+            if (event.target === customerModal) {
+
+                closeCustomerModal();
+
+            }
+
+
+            if (event.target === editCustomerModal) {
+
+                closeEditCustomerModal();
+
+            }
+
+
+            if (event.target === deleteModal) {
+
+                closeDeleteModal();
+
+            }
+
+        });
+
+
+        /* =========================
+           VALIDATION FUNCTIONS
+        ========================== */
+
+        function showError(input, message) {
+
+            const formGroup =
+                input.closest('.form-group');
+
+
+            let errorElem =
+                formGroup.querySelector('.error-msg');
+
+
+            if (!errorElem) {
+
+                errorElem =
+                    document.createElement('span');
+
+                errorElem.className =
+                    'error-msg';
+
+                formGroup.appendChild(errorElem);
+
+            }
+
+
+            errorElem.innerText =
+                message;
+
+
+            input.classList.add('input-error');
+
+        }
+
+
+        function clearError(input) {
+
+            const formGroup =
+                input.closest('.form-group');
+
+
+            const errorElem =
+                formGroup.querySelector('.error-msg');
+
+
+            if (errorElem) {
+
+                errorElem.remove();
+
+            }
+
+
+            input.classList.remove('input-error');
+
+        }
+
+
+        function clearAllErrors() {
+
+            document
+                .querySelectorAll('.error-msg')
+                .forEach(el => el.remove());
+
+
+            document
+                .querySelectorAll('.input-error')
+                .forEach(el =>
+                    el.classList.remove('input-error')
+                );
+
+        }
+
+
+        function clearEditErrors() {
+
+            editCustomerForm
+                .querySelectorAll('.error-msg')
+                .forEach(el => el.remove());
+
+
+            editCustomerForm
+                .querySelectorAll('.input-error')
+                .forEach(el =>
+                    el.classList.remove('input-error')
+                );
+
+        }
+
+
+        /* =========================
+           VALIDATE ONE FIELD
+        ========================== */
+
+        function validateField(input) {
+
+            const name =
+                input.name;
+
+
+            const value =
+                input.value.trim();
+
+
+            // 1. Name Validation
+
+            if (name === 'name') {
+
+                if (value === '') {
+
+                    showError(
+                        input,
+                        'Customer name is required'
+                    );
+
+                    return false;
+
+                } else if (/[0-9]/.test(value)) {
+
+                    showError(
+                        input,
+                        'Name cannot contain numbers'
+                    );
+
+                    return false;
+
+                } else if (value.length > 50) {
+
+                    showError(
+                        input,
+                        'Name cannot exceed 50 characters'
+                    );
+
+                    return false;
+
+                }
+
+            }
+
+
+            // 2. Phone Validation
+
+            if (name === 'phone') {
+
+                if (value === '') {
+
+                    showError(
+                        input,
+                        'Phone number is required'
+                    );
+
+                    return false;
+
+                } else if (!/^[0-9+\-\s]+$/.test(value)) {
+
+                    showError(
+                        input,
+                        'Enter a valid phone number'
+                    );
+
+                    return false;
+
+                } else if (
+                    value.replace(/[^0-9]/g, '').length < 10
+                ) {
+
+                    showError(
+                        input,
+                        'Phone number must have at least 10 digits'
+                    );
+
+                    return false;
+
+                } else if (value.length > 12) {
+
+                    showError(
+                        input,
+                        'Phone number cannot exceed 12 characters'
+                    );
+
+                    return false;
+
+                }
+
+            }
+
+
+            // 3. Alternate Phone Validation - REQUIRED
+
+            if (name === 'alternatePhone') {
+
+                if (value === '') {
+
+                    showError(
+                        input,
+                        'Alternate phone number is required'
+                    );
+
+                    return false;
+
+                } else if (!/^[0-9+\-\s]+$/.test(value)) {
+
+                    showError(
+                        input,
+                        'Enter a valid phone number'
+                    );
+
+                    return false;
+
+                } else if (
+                    value.replace(/[^0-9]/g, '').length < 10
+                ) {
+
+                    showError(
+                        input,
+                        'Phone number must have at least 10 digits'
+                    );
+
+                    return false;
+
+                } else if (value.length > 12) {
+
+                    showError(
+                        input,
+                        'Phone number cannot exceed 12 characters'
+                    );
+
+                    return false;
+
+                }
+
+            }
+
+
+            // 4. Email Validation
+
+            if (name === 'email' && value !== '') {
+
+                const emailRegex =
+                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+                if (!emailRegex.test(value)) {
+
+                    showError(
+                        input,
+                        'Enter a valid email address'
+                    );
+
+                    return false;
+
+                } else if (value.length > 80) {
+
+                    showError(
+                        input,
+                        'Email cannot exceed 80 characters'
+                    );
+
+                    return false;
+
+                }
+
+            }
+
+
+            // 5. Place Validation - REQUIRED
+
+            if (name === 'place') {
+
+                if (value === '') {
+
+                    showError(
+                        input,
+                        'Place is required'
+                    );
+
+                    return false;
+
+                } else if (value.length < 2) {
+
+                    showError(
+                        input,
+                        'Place must be at least 2 characters'
+                    );
+
+                    return false;
+
+                } else if (value.length > 50) {
+
+                    showError(
+                        input,
+                        'Place cannot exceed 50 characters'
+                    );
+
+                    return false;
+
+                }
+
+            }
+
+
+            // 6. Address Validation
+
+            if (name === 'address' && value !== '') {
+
+                if (value.length < 5) {
+
+                    showError(
+                        input,
+                        'Address must be at least 5 characters'
+                    );
+
+                    return false;
+
+                } else if (value.length > 150) {
+
+                    showError(
+                        input,
+                        'Address cannot exceed 150 characters'
+                    );
+
+                    return false;
+
+                }
+
+            }
+
+
+            // 7. Notes Validation
+
+            if (name === 'notes' && value !== '') {
+
+                if (value.length > 250) {
+
+                    showError(
+                        input,
+                        'Notes cannot exceed 250 characters'
+                    );
+
+                    return false;
+
+                }
+
+            }
+
+
+            clearError(input);
+
+            return true;
+
+        }
+
+
+        /* =========================
+           ADD FORM VALIDATION
+        ========================== */
+
+        customerForm
+            .querySelectorAll('input, textarea')
+            .forEach(input => {
+
+                input.addEventListener(
+                    'input',
+                    () => validateField(input)
+                );
+
+
+                input.addEventListener(
+                    'blur',
+                    () => validateField(input)
+                );
+
+            });
+
+
+        customerForm.addEventListener(
+            'submit',
+            function (event) {
+
+                let isFormValid = true;
+
+
+                customerForm
+                    .querySelectorAll('input, textarea')
+                    .forEach(input => {
+
+                        if (!validateField(input)) {
+
+                            isFormValid = false;
+
+                        }
+
+                    });
+
+
+                if (!isFormValid) {
+
+                    event.preventDefault();
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           EDIT FORM VALIDATION
+        ========================== */
+
+        editCustomerForm
+            .querySelectorAll('input, textarea')
+            .forEach(input => {
+
+                input.addEventListener(
+                    'input',
+                    () => validateField(input)
+                );
+
+
+                input.addEventListener(
+                    'blur',
+                    () => validateField(input)
+                );
+
+            });
+
+
+        editCustomerForm.addEventListener(
+            'submit',
+            function (event) {
+
+                let isFormValid = true;
+
+
+                editCustomerForm
+                    .querySelectorAll('input, textarea')
+                    .forEach(input => {
+
+                        if (!validateField(input)) {
+
+                            isFormValid = false;
+
+                        }
+
+                    });
+
+
+                if (!isFormValid) {
+
+                    event.preventDefault();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

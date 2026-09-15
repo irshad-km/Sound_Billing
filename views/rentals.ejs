@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rentals | Sound Billing</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        /* =========================
+           LAYOUT
+        ========================= */
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            padding: 22px 15px;
+        }
+
+        .sidebar-logo {
+            font-size: 21px;
+            font-weight: 700;
+            padding: 10px 12px 28px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: #cbd5e1;
+            padding: 13px 14px;
+            border-radius: 9px;
+            display: block;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .sidebar-nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn-primary {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            border: none;
+            background: #e5e7eb;
+            color: #374151;
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-small {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-small:hover {
+            background: #1d4ed8;
+        }
+
+        /* =========================
+           SUMMARY CARDS
+        ========================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .summary-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .summary-card span {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .summary-card h2 {
+            font-size: 25px;
+            margin-top: 4px;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .table-header p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th {
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 14px 18px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 18px;
+            border-top: 1px solid #eef0f3;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        td strong {
+            font-weight: 600;
+        }
+
+        td small {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-warning {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-success {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .modal-header p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .modal-close {
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            color: #6b7280;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal form {
+            padding: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 8px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .main-content {
+                margin-left: 210px;
+                width: calc(100% - 210px);
+                padding: 22px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+                padding: 12px;
+            }
+
+            .app-layout {
+                display: block;
+            }
+
+            .sidebar-logo {
+                padding: 8px 10px 14px;
+            }
+
+            .sidebar-nav {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 18px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .page-header .btn-primary {
+                width: 100%;
+            }
+
+            .modal {
+                max-height: 95vh;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            .sidebar-nav {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .summary-card {
+                padding: 16px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="app-layout">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <%- include("partials/sidebar") %>
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+                <h1>Rentals</h1>
+
+                <p>
+                    Manage equipment rentals and returns
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="openRentalModal()"
+            >
+                + Add Rental
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             SUMMARY
+        ========================== -->
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    📦
+                </div>
+
+                <div>
+                    <span>Total Rentals</span>
+
+                    <h2>
+                        <%= rentals.length %>
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    🔊
+                </div>
+
+                <div>
+                    <span>Currently Rented</span>
+
+                    <h2>
+                        <%= rentals.filter(
+                            rental => rental.status === "Rented"
+                        ).length %>
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    ✅
+                </div>
+
+                <div>
+                    <span>Returned</span>
+
+                    <h2>
+                        <%= rentals.filter(
+                            rental => rental.status === "Returned"
+                        ).length %>
+                    </h2>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             RENTAL TABLE
+        ========================== -->
+
+        <div class="table-card">
+
+            <div class="table-header">
+
+                <h2>Rental List</h2>
+
+                <p>
+                    Equipment currently rented or returned
+                </p>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Event</th>
+                            <th>Equipment</th>
+                            <th>Quantity</th>
+                            <th>Rental Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <% if (rentals.length === 0) { %>
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    style="text-align:center; padding:45px;"
+                                >
+                                    <div style="font-size:32px; margin-bottom:10px;">
+                                        📦
+                                    </div>
+
+                                    <strong>
+                                        No rentals found
+                                    </strong>
+
+                                    <div
+                                        style="color:#6b7280; margin-top:5px; font-size:13px;"
+                                    >
+                                        Add your first equipment rental
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        <% } else { %>
+
+
+                            <% rentals.forEach(rental => { %>
+
+                                <tr>
+
+                                    <!-- EVENT -->
+
+                                    <td>
+
+                                        <% if (rental.booking) { %>
+
+                                            <strong>
+                                                <%= rental.booking.eventType %>
+                                            </strong>
+
+                                            <br>
+
+                                            <small>
+                                                <%= rental.booking.location %>
+                                            </small>
+
+                                        <% } else { %>
+
+                                            <span>
+                                                Event unavailable
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+
+                                    <!-- EQUIPMENT -->
+
+                                    <td>
+
+                                        <% if (rental.equipment) { %>
+
+                                            <strong>
+                                                <%= rental.equipment.name %>
+                                            </strong>
+
+                                            <% if (rental.equipment.model) { %>
+
+                                                <br>
+
+                                                <small>
+                                                    <%= rental.equipment.model %>
+                                                </small>
+
+                                            <% } %>
+
+                                        <% } else { %>
+
+                                            <span>
+                                                Equipment unavailable
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+
+                                    <!-- QUANTITY -->
+
+                                    <td>
+                                        <%= rental.quantity %>
+                                    </td>
+
+
+                                    <!-- AMOUNT -->
+
+                                    <td>
+
+                                        ₹<%= Number(
+                                            rental.rentalAmount || 0
+                                        ).toLocaleString("en-IN") %>
+
+                                    </td>
+
+
+                                    <!-- STATUS -->
+
+                                    <td>
+
+                                        <% if (rental.status === "Rented") { %>
+
+                                            <span class="status-badge status-warning">
+                                                Rented
+                                            </span>
+
+                                        <% } else { %>
+
+                                            <span class="status-badge status-success">
+                                                Returned
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+
+                                    <!-- ACTION -->
+
+                                    <td>
+
+                                        <% if (rental.status === "Rented") { %>
+
+                                            <form
+                                                action="/rentals/return/<%= rental._id %>"
+                                                method="POST"
+                                                style="display:inline;"
+                                                onsubmit="return confirm('Mark this equipment as returned?');"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn-small"
+                                                >
+                                                    Return
+                                                </button>
+
+                                            </form>
+
+                                        <% } else { %>
+
+                                            <span
+                                                style="color:#6b7280; font-size:12px;"
+                                            >
+                                                Completed
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+
+                        <% } %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================
+     ADD RENTAL MODAL
+========================== -->
+
+<div
+    id="rentalModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+
+        <!-- MODAL HEADER -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Add Rental
+                </h2>
+
+                <p>
+                    Assign equipment to an event
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeRentalModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <form
+            action="/rentals/add"
+            method="POST"
+        >
+
+
+            <!-- EVENT -->
+
+            <div class="form-group">
+
+                <label>
+                    Event
+                </label>
+
+                <select
+                    name="booking"
+                    required
+                >
+
+                    <option value="">
+                        Select Event
+                    </option>
+
+
+                    <% bookings.forEach(booking => { %>
+
+                        <option
+                            value="<%= booking._id %>"
+                        >
+
+                            <%= booking.eventType %>
+
+                            -
+
+                            <%= booking.customer
+                                ? booking.customer.name
+                                : "Customer" %>
+
+                            -
+
+                            <%= new Date(
+                                booking.eventDate
+                            ).toLocaleDateString("en-IN") %>
+
+                        </option>
+
+                    <% }) %>
+
+                </select>
+
+            </div>
+
+
+            <!-- EQUIPMENT -->
+
+            <div class="form-group">
+
+                <label>
+                    Equipment
+                </label>
+
+                <select
+                    name="equipment"
+                    id="equipmentSelect"
+                    required
+                >
+
+                    <option value="">
+                        Select Equipment
+                    </option>
+
+
+                    <% equipments.forEach(item => { %>
+
+                        <option
+                            value="<%= item._id %>"
+                            data-available="<%= item.availableQuantity %>"
+                        >
+
+                            <%= item.name %>
+
+                            <% if (item.model) { %>
+
+                                -
+                                <%= item.model %>
+
+                            <% } %>
+
+                            — Available:
+                            <%= item.availableQuantity %>
+
+                        </option>
+
+                    <% }) %>
+
+                </select>
+
+            </div>
+
+
+            <!-- QUANTITY -->
+
+            <div class="form-group">
+
+                <label>
+                    Quantity
+                </label>
+
+                <input
+                    type="number"
+                    name="quantity"
+                    id="quantityInput"
+                    min="1"
+                    value="1"
+                    required
+                >
+
+                <small id="availabilityText">
+                    Select equipment to see availability
+                </small>
+
+            </div>
+
+
+            <!-- RENTAL AMOUNT -->
+
+            <div class="form-group">
+
+                <label>
+                    Rental Amount
+                </label>
+
+                <input
+                    type="number"
+                    name="rentalAmount"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter rental amount"
+                    required
+                >
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    onclick="closeRentalModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                >
+                    Save Rental
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    /* =========================
+       OPEN MODAL
+    ========================== */
+
+    function openRentalModal() {
+
+        document
+            .getElementById("rentalModal")
+            .classList.add("show");
+
+    }
+
+
+    /* =========================
+       CLOSE MODAL
+    ========================== */
+
+    function closeRentalModal() {
+
+        document
+            .getElementById("rentalModal")
+            .classList.remove("show");
+
+    }
+
+
+    /* =========================
+       EQUIPMENT AVAILABILITY
+    ========================== */
+
+    const equipmentSelect =
+        document.getElementById("equipmentSelect");
+
+    const quantityInput =
+        document.getElementById("quantityInput");
+
+    const availabilityText =
+        document.getElementById("availabilityText");
+
+
+    function updateAvailability() {
+
+        const selectedOption =
+            equipmentSelect.options[
+                equipmentSelect.selectedIndex
+            ];
+
+
+        if (
+            !selectedOption ||
+            !selectedOption.dataset.available
+        ) {
+
+            availabilityText.textContent =
+                "Select equipment to see availability";
+
+            quantityInput.removeAttribute("max");
+
+            return;
+        }
+
+
+        const available =
+            Number(
+                selectedOption.dataset.available
+            );
+
+
+        quantityInput.max = available;
+
+
+        if (available <= 0) {
+
+            availabilityText.textContent =
+                "This equipment is currently unavailable.";
+
+            quantityInput.value = 0;
+
+        } else {
+
+            availabilityText.textContent =
+                "Available quantity: " + available;
+
+            if (
+                Number(quantityInput.value) > available
+            ) {
+
+                quantityInput.value = available;
+
+            }
+
+        }
+
+    }
+
+
+    equipmentSelect.addEventListener(
+        "change",
+        updateAvailability
+    );
+
+
+    /* =========================
+       QUANTITY VALIDATION
+    ========================== */
+
+    quantityInput.addEventListener(
+        "input",
+        function () {
+
+            const max =
+                Number(
+                    quantityInput.max || 0
+                );
+
+
+            const value =
+                Number(
+                    quantityInput.value
+                );
+
+
+            if (max > 0 && value > max) {
+
+                quantityInput.value = max;
+
+            }
+
+        }
+    );
+
+
+    /* =========================
+       CLOSE WHEN CLICK OUTSIDE
+    ========================== */
+
+    document
+        .getElementById("rentalModal")
+        .addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target === this
+                ) {
+
+                    closeRentalModal();
+
+                }
+
+            }
+        );
+
+
+    /* =========================
+       ESC KEY
+    ========================== */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+
+                closeRentalModal();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

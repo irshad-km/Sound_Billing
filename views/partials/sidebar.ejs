@@ -1,0 +1,132 @@
+<style>
+    .sidebar {
+        width: 250px;
+        background: #111827;
+        color: white;
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+    }
+
+    .sidebar .logo {
+        font-size: 20px;
+        font-weight: 700;
+        padding: 8px 12px 30px;
+    }
+
+    .sidebar .logo span {
+        margin-left: 6px;
+    }
+
+    .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #aeb7c7;
+        padding: 12px 14px;
+        border-radius: 10px;
+        transition: 0.2s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background: #2563eb;
+        color: white;
+    }
+
+    .sidebar-bottom {
+        margin-top: auto;
+    }
+
+    @media (max-width: 650px) {
+        .sidebar {
+            width: 100%;
+            padding: 10px;
+            position: relative;
+        }
+
+        .sidebar .logo {
+            padding: 8px 10px 12px;
+            font-size: 18px;
+        }
+
+        .sidebar nav {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .sidebar a {
+            padding: 9px 5px;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .sidebar-bottom {
+            display: none;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .sidebar nav {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .sidebar .logo {
+            font-size: 16px;
+        }
+    }
+</style>
+
+
+<aside class="sidebar">
+
+    <div class="logo">
+        🎧 <span>Sound Billing</span>
+    </div>
+
+    <nav>
+
+       <a href="/dashboard" class="<%= currentPath.startsWith('/dashboard') ? 'active' : '' %>">
+    🏠 Dashboard
+</a>
+        <a href="/customers" class="<%= currentPath.startsWith('/customers') ? 'active' : '' %>">
+            👥 Customers
+        </a>
+
+        <a href="/events" class="<%= currentPath.startsWith('/events') ? 'active' : '' %>">
+            📅 Events
+        </a>
+
+        <a href="/equipment" class="<%= currentPath.startsWith('/equipment') ? 'active' : '' %>">
+            🔊 Equipment
+        </a>
+
+        <a href="/rentals" class="<%= currentPath.startsWith('/rentals') ? 'active' : '' %>">
+            📦 Rentals
+        </a>
+
+        <a href="/invoices" class="<%= currentPath.startsWith('/invoices') ? 'active' : '' %>">
+            🧾 Invoices
+        </a>
+
+        <a href="/payments" class="<%= currentPath.startsWith('/payments') ? 'active' : '' %>">
+            💳 Payments
+        </a>
+
+   
+
+    </nav>
+
+    <div class="sidebar-bottom">
+        <a href="#" class="<%= currentPath.startsWith('/settings') ? 'active' : '' %>">
+            ⚙️ Settings
+        </a>
+    </div>
+
+</aside>

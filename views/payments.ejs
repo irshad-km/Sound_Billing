@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payments - Sound Billing</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            padding: 22px 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .topbar p {
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* SUMMARY */
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* TABLE */
+
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th,
+        td {
+            padding: 13px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            color: #6b7280;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .method {
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        /* MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 520px;
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 21px;
+        }
+
+        .close {
+            border: none;
+            background: none;
+            font-size: 25px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .invoice-info {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        /* DELETE MODAL */
+
+        .delete-box {
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .delete-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .delete-box p {
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .delete-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cancel-btn {
+            flex: 1;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .confirm-delete {
+            flex: 1;
+            padding: 11px;
+            border: none;
+            background: #dc2626;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .app {
+                display: block;
+            }
+
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 18px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .nav {
+                grid-template-columns: 1fr;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                flex-direction: column;
+            }
+
+            .add-btn {
+                width: 100%;
+            }
+
+            .main {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+<%- include("partials/sidebar") %>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+                <h1>Payments</h1>
+                <p>Track customer payments and invoice balances.</p>
+            </div>
+
+            <button class="add-btn" onclick="openPaymentModal()">
+                + Add Payment
+            </button>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="summary">
+
+            <div class="card">
+                <div class="card-title">Total Payments</div>
+
+                <div class="card-value">
+                    ₹<%= payments.reduce((sum, p) => sum + p.amount, 0).toLocaleString("en-IN") %>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">Cash</div>
+
+                <div class="card-value">
+                    ₹<%= payments
+                        .filter(p => p.paymentMethod === "Cash")
+                        .reduce((sum, p) => sum + p.amount, 0)
+                        .toLocaleString("en-IN") %>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">UPI</div>
+
+                <div class="card-value">
+                    ₹<%= payments
+                        .filter(p => p.paymentMethod === "UPI")
+                        .reduce((sum, p) => sum + p.amount, 0)
+                        .toLocaleString("en-IN") %>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">Bank Transfer</div>
+
+                <div class="card-value">
+                    ₹<%= payments
+                        .filter(p => p.paymentMethod === "Bank Transfer")
+                        .reduce((sum, p) => sum + p.amount, 0)
+                        .toLocaleString("en-IN") %>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENTS TABLE -->
+
+        <div class="table-card">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Payment</th>
+                        <th>Invoice</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Method</th>
+                        <th>Notes</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <% if (payments.length === 0) { %>
+
+                        <tr>
+                            <td colspan="8" class="empty">
+                                No payments found.
+                            </td>
+                        </tr>
+
+                    <% } %>
+
+
+                    <% payments.forEach(payment => { %>
+
+                        <tr>
+
+                            <td>
+                                <strong><%= payment.paymentNumber %></strong>
+                            </td>
+
+                            <td>
+                                <%= payment.invoice?.invoiceNumber || "-" %>
+                            </td>
+
+                            <td>
+                                <%= payment.invoice?.booking?.customer?.name || "-" %>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹<%= payment.amount.toLocaleString("en-IN") %>
+                                </strong>
+                            </td>
+
+                            <td>
+                                <%= new Date(payment.paymentDate).toLocaleDateString("en-IN") %>
+                            </td>
+
+                            <td>
+                                <span class="method">
+                                    <%= payment.paymentMethod %>
+                                </span>
+                            </td>
+
+                            <td>
+                                <%= payment.notes || "-" %>
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="action-btn delete-btn"
+                                    onclick="openDeleteModal(
+                                        '<%= payment._id %>',
+                                        '<%= payment.paymentNumber %>'
+                                    )">
+                                    🗑 Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    <% }) %>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ADD PAYMENT MODAL -->
+
+<div class="modal" id="paymentModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Add Payment</h2>
+
+            <button class="close" onclick="closePaymentModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form action="/payments/add" method="POST">
+
+            <div class="form-group">
+
+                <label>Invoice</label>
+
+                <select
+                    name="invoice"
+                    id="invoiceSelect"
+                    required
+                    onchange="showInvoiceInfo()">
+
+                    <option value="">
+                        Select Invoice
+                    </option>
+
+                    <% invoices.forEach(invoice => { %>
+
+                        <option
+                            value="<%= invoice._id %>"
+                            data-total="<%= invoice.totalAmount %>"
+                            data-paid="<%= invoice.advance %>"
+                            data-balance="<%= invoice.balance %>">
+
+                            <%= invoice.invoiceNumber %>
+                            -
+                            <%= invoice.booking?.customer?.name || "Customer" %>
+
+                        </option>
+
+                    <% }) %>
+
+                </select>
+
+            </div>
+
+
+            <div
+                class="invoice-info"
+                id="invoiceInfo"
+                style="display:none;">
+
+                <div>
+                    Total:
+                    <strong id="invoiceTotal">₹0</strong>
+                </div>
+
+                <div>
+                    Already Paid:
+                    <strong id="invoicePaid">₹0</strong>
+                </div>
+
+                <div>
+                    Balance:
+                    <strong id="invoiceBalance">₹0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Payment Amount</label>
+
+                <input
+                    type="number"
+                    name="amount"
+                    id="paymentAmount"
+                    min="1"
+                    step="0.01"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Payment Date</label>
+
+                <input
+                    type="date"
+                    name="paymentDate"
+                    id="paymentDate"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Payment Method</label>
+
+                <select name="paymentMethod" required>
+
+                    <option value="">
+                        Select Method
+                    </option>
+
+                    <option value="Cash">
+                        Cash
+                    </option>
+
+                    <option value="UPI">
+                        UPI
+                    </option>
+
+                    <option value="Bank Transfer">
+                        Bank Transfer
+                    </option>
+
+                    <option value="Card">
+                        Card
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Notes</label>
+
+                <textarea
+                    name="notes"
+                    placeholder="Optional note..."></textarea>
+
+            </div>
+
+
+            <button type="submit" class="submit-btn">
+                Save Payment
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- DELETE MODAL -->
+
+<div class="modal" id="deleteModal">
+
+    <div class="modal-box delete-box">
+
+        <div class="delete-icon">
+            🗑️
+        </div>
+
+        <h2>Delete Payment?</h2>
+
+        <p id="deleteText">
+            Are you sure you want to delete this payment?
+        </p>
+
+        <div class="delete-actions">
+
+            <button
+                class="cancel-btn"
+                onclick="closeDeleteModal()">
+                Cancel
+            </button>
+
+            <button
+                class="confirm-delete"
+                onclick="confirmDelete()">
+                🗑 Delete
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    let deletePaymentId = null;
+
+
+    function openPaymentModal() {
+
+        document.getElementById("paymentModal").style.display = "flex";
+
+        const today = new Date().toISOString().split("T")[0];
+
+        document.getElementById("paymentDate").value = today;
+    }
+
+
+    function closePaymentModal() {
+
+        document.getElementById("paymentModal").style.display = "none";
+
+    }
+
+
+    function showInvoiceInfo() {
+
+        const select = document.getElementById("invoiceSelect");
+
+        const option = select.options[select.selectedIndex];
+
+        const info = document.getElementById("invoiceInfo");
+
+        if (!option.value) {
+
+            info.style.display = "none";
+
+            return;
+        }
+
+        const total = Number(option.dataset.total || 0);
+
+        const paid = Number(option.dataset.paid || 0);
+
+        const balance = Number(option.dataset.balance || 0);
+
+        document.getElementById("invoiceTotal").textContent =
+            "₹" + total.toLocaleString("en-IN");
+
+        document.getElementById("invoicePaid").textContent =
+            "₹" + paid.toLocaleString("en-IN");
+
+        document.getElementById("invoiceBalance").textContent =
+            "₹" + balance.toLocaleString("en-IN");
+
+        document.getElementById("paymentAmount").max = balance;
+
+        info.style.display = "block";
+    }
+
+
+    function openDeleteModal(id, paymentNumber) {
+
+        deletePaymentId = id;
+
+        document.getElementById("deleteText").textContent =
+            "Are you sure you want to delete " + paymentNumber + "?";
+
+        document.getElementById("deleteModal").style.display = "flex";
+    }
+
+
+    function closeDeleteModal() {
+
+        deletePaymentId = null;
+
+        document.getElementById("deleteModal").style.display = "none";
+    }
+
+
+    function confirmDelete() {
+
+        if (!deletePaymentId) return;
+
+        const form = document.createElement("form");
+
+        form.method = "POST";
+
+        form.action = "/payments/delete/" + deletePaymentId;
+
+        document.body.appendChild(form);
+
+        form.submit();
+    }
+
+
+    window.addEventListener("click", function(event) {
+
+        const paymentModal = document.getElementById("paymentModal");
+
+        const deleteModal = document.getElementById("deleteModal");
+
+        if (event.target === paymentModal) {
+            closePaymentModal();
+        }
+
+        if (event.target === deleteModal) {
+            closeDeleteModal();
+        }
+
+    });
+
+
+    window.addEventListener("keydown", function(event) {
+
+        if (event.key === "Escape") {
+
+            closePaymentModal();
+
+            closeDeleteModal();
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

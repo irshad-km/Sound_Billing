@@ -1,0 +1,1090 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sound Billing | Dashboard</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        /* =====================================================
+           DASHBOARD
+        ===================================================== */
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .dashboard-header p {
+            margin: 6px 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .profile-info strong {
+            display: block;
+            color: #111827;
+            font-size: 14px;
+        }
+
+        .profile-info small {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           STAT CARDS
+        ===================================================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.035);
+        }
+
+        .card span {
+            display: block;
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .card h2 {
+            margin: 9px 0 5px;
+            font-size: 27px;
+            color: #111827;
+        }
+
+        .card small {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+
+        .content-grid {
+            display: grid;
+
+            /* Large table + proper Quick Action panel */
+            grid-template-columns: minmax(0, 3.7fr) minmax(260px, 1fr);
+
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .panel {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.035);
+        }
+
+        .booking-panel {
+            min-width: 0;
+            padding: 20px;
+        }
+
+
+        /* =====================================================
+           PANEL HEADER
+        ===================================================== */
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 19px;
+            color: #111827;
+        }
+
+        .panel-subtitle {
+            margin: 5px 0 0;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #eef0f3;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        th {
+            padding: 13px 12px;
+            text-align: left;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            color: #374151;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f1f3;
+            white-space: nowrap;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fafcff;
+        }
+
+        td strong {
+            color: #111827;
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status.paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+
+        /* =====================================================
+           VIEW BUTTON
+        ===================================================== */
+
+        .action-btn {
+            border: 1px solid #dbeafe;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 7px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+
+        /* =====================================================
+           QUICK ACTION PANEL
+        ===================================================== */
+
+        .quick-actions-panel {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quick-actions-panel .panel-header {
+            margin-bottom: 16px;
+        }
+
+        .quick-actions-panel .panel-header h2 {
+            font-size: 18px;
+        }
+
+        .quick-actions-panel .panel-subtitle {
+            font-size: 12px;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+
+        /* =====================================================
+           QUICK ACTION BUTTON
+        ===================================================== */
+
+        .quick-action-btn {
+            width: 100%;
+            min-height: 48px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 11px 13px;
+
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+
+            color: #111827;
+            text-align: left;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .quick-action-btn:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08);
+        }
+
+        .quick-action-icon {
+            width: 34px;
+            height: 34px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+
+            font-size: 16px;
+        }
+
+        .quick-action-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .quick-action-title {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .quick-action-desc {
+            display: block;
+            margin-top: 2px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .quick-action-arrow {
+            color: #9ca3af;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 15px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1200px) {
+
+            .content-grid {
+                grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 1050px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions-panel {
+                width: 100%;
+            }
+
+            .actions {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .dashboard-header {
+                align-items: flex-start;
+            }
+
+            .dashboard-header h1 {
+                font-size: 24px;
+            }
+
+            .profile {
+                display: none;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-panel,
+            .quick-actions-panel {
+                padding: 15px;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="app">
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <%- include("partials/sidebar") %>
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main class="main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="dashboard-header">
+
+                <div>
+
+                    <h1>
+                        Dashboard
+                    </h1>
+
+                    <p>
+                        Welcome back 👋
+                    </p>
+
+                </div>
+
+
+                <div class="profile">
+
+                    <div class="avatar">
+                        A
+                    </div>
+
+                    <div class="profile-info">
+
+                        <strong>
+                            Admin
+                        </strong>
+
+                        <small>
+                            Administrator
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 STATISTICS
+            ================================================== -->
+
+            <section class="stats">
+
+
+                <!-- Today's Bookings -->
+
+                <div class="card">
+
+                    <span>
+                        Today's Bookings
+                    </span>
+
+                    <h2>
+
+                        <%= bookings.filter(booking => {
+
+                            const today = new Date();
+
+                            const eventDate =
+                                new Date(booking.eventDate);
+
+                            return eventDate.toDateString() ===
+                                today.toDateString();
+
+                        }).length %>
+
+                    </h2>
+
+                    <small>
+                        Events today
+                    </small>
+
+                </div>
+
+
+                <!-- Total Revenue -->
+
+                <div class="card">
+
+                    <span>
+                        Total Revenue
+                    </span>
+
+                    <h2>
+
+                        ₹<%= invoices.reduce((sum, invoice) => {
+
+                            return sum +
+                                (Number(invoice.totalAmount) || 0);
+
+                        }, 0).toLocaleString("en-IN") %>
+
+                    </h2>
+
+                    <small>
+                        Total invoiced
+                    </small>
+
+                </div>
+
+
+                <!-- Pending Payments -->
+
+                <div class="card">
+
+                    <span>
+                        Pending Payments
+                    </span>
+
+                    <h2>
+
+                        ₹<%= invoices.reduce((sum, invoice) => {
+
+                            return sum +
+                                (Number(invoice.balance) || 0);
+
+                        }, 0).toLocaleString("en-IN") %>
+
+                    </h2>
+
+                    <small>
+                        To be collected
+                    </small>
+
+                </div>
+
+
+                <!-- Equipment Out -->
+
+                <div class="card">
+
+                    <span>
+                        Equipment Out
+                    </span>
+
+                    <h2>
+
+                        <%= equipment.reduce((sum, item) => {
+
+                            return sum +
+                                (Number(item.rentedQuantity) || 0);
+
+                        }, 0) %>
+
+                    </h2>
+
+                    <small>
+                        Currently rented
+                    </small>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CONTENT GRID
+            ================================================== -->
+
+            <section class="content-grid">
+
+
+                <!-- =================================================
+                     UPCOMING EVENTS
+                ================================================== -->
+
+                <div class="panel booking-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2>
+                                Upcoming Events
+                            </h2>
+
+                            <p class="panel-subtitle">
+                                Upcoming bookings from your events
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TABLE -->
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Customer
+                                    </th>
+
+                                    <th>
+                                        Event Type
+                                    </th>
+
+                                    <th>
+                                        Event Date
+                                    </th>
+
+                                    <th>
+                                        Location
+                                    </th>
+
+                                    <th>
+                                        Total Amount
+                                    </th>
+
+                                    <th>
+                                        Advance
+                                    </th>
+
+                                    <th>
+                                        Balance
+                                    </th>
+
+                                    <th>
+                                        Payment Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <%
+                                    const today = new Date();
+
+                                    const upcomingBookings = bookings
+                                        .filter(booking => {
+
+                                            return new Date(
+                                                booking.eventDate
+                                            ) >= today;
+
+                                        })
+                                        .slice(0, 5);
+                                %>
+
+
+                                <% if (upcomingBookings.length === 0) { %>
+
+                                    <tr>
+
+                                        <td colspan="9">
+
+                                            <div class="empty-state">
+
+                                                <div class="empty-state-icon">
+                                                    📅
+                                                </div>
+
+                                                <div>
+                                                    No upcoming events
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                <% } else { %>
+
+
+                                    <% upcomingBookings.forEach(booking => { %>
+
+                                        <tr>
+
+
+                                            <!-- Customer -->
+
+                                            <td>
+
+                                                <strong>
+
+                                                    <%= booking.customer
+                                                        ? booking.customer.name
+                                                        : "Unknown Customer" %>
+
+                                                </strong>
+
+                                            </td>
+
+
+                                            <!-- Event Type -->
+
+                                            <td>
+                                                <%= booking.eventType %>
+                                            </td>
+
+
+                                            <!-- Event Date -->
+
+                                            <td>
+
+                                                <%= new Date(
+                                                    booking.eventDate
+                                                ).toLocaleDateString(
+                                                    "en-IN",
+                                                    {
+                                                        day: "2-digit",
+                                                        month: "short",
+                                                        year: "numeric"
+                                                    }
+                                                ) %>
+
+                                            </td>
+
+
+                                            <!-- Location -->
+
+                                            <td>
+                                                <%= booking.location %>
+                                            </td>
+
+
+                                            <!-- Total -->
+
+                                            <td>
+
+                                                ₹<%= Number(
+                                                    booking.totalAmount || 0
+                                                ).toLocaleString("en-IN") %>
+
+                                            </td>
+
+
+                                            <!-- Advance -->
+
+                                            <td>
+
+                                                ₹<%= Number(
+                                                    booking.advance || 0
+                                                ).toLocaleString("en-IN") %>
+
+                                            </td>
+
+
+                                            <!-- Balance -->
+
+                                            <td>
+
+                                                ₹<%= Number(
+                                                    booking.balance || 0
+                                                ).toLocaleString("en-IN") %>
+
+                                            </td>
+
+
+                                            <!-- Payment Status -->
+
+                                            <td>
+
+                                                <% if (
+                                                    booking.paymentStatus === "Paid"
+                                                ) { %>
+
+                                                    <span class="status paid">
+                                                        Paid
+                                                    </span>
+
+                                                <% } else if (
+                                                    booking.paymentStatus === "Partial"
+                                                ) { %>
+
+                                                    <span class="status partial">
+                                                        Partial
+                                                    </span>
+
+                                                <% } else { %>
+
+                                                    <span class="status pending">
+                                                        Pending
+                                                    </span>
+
+                                                <% } %>
+
+                                            </td>
+
+
+                                            <!-- Action -->
+
+                                            
+
+                                        </tr>
+
+                                    <% }) %>
+
+
+                                <% } %>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     QUICK ACTIONS
+                ================================================== -->
+
+                <div class="panel quick-actions-panel">
+
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2>
+                                Quick Actions
+                            </h2>
+
+                            <p class="panel-subtitle">
+                                Frequently used actions
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="actions">
+
+
+                        <!-- New Customer -->
+
+                        <button
+                            class="quick-action-btn"
+                            onclick="window.location.href='/customers'">
+
+                            <span class="quick-action-icon">
+                                👥
+                            </span>
+
+                            <span class="quick-action-text">
+
+                                <span class="quick-action-title">
+                                    New Customer
+                                </span>
+
+                                <span class="quick-action-desc">
+                                    Add a customer
+                                </span>
+
+                            </span>
+
+                            <span class="quick-action-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+
+                        <!-- New Booking -->
+
+                        <button
+                            class="quick-action-btn"
+                            onclick="window.location.href='/events'">
+
+                            <span class="quick-action-icon">
+                                📅
+                            </span>
+
+                            <span class="quick-action-text">
+
+                                <span class="quick-action-title">
+                                    New Booking
+                                </span>
+
+                                <span class="quick-action-desc">
+                                    Create an event
+                                </span>
+
+                            </span>
+
+                            <span class="quick-action-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+
+                        <!-- Create Invoice -->
+
+                        <button
+                            class="quick-action-btn"
+                            onclick="window.location.href='/invoices'">
+
+                            <span class="quick-action-icon">
+                                🧾
+                            </span>
+
+                            <span class="quick-action-text">
+
+                                <span class="quick-action-title">
+                                    Create Invoice
+                                </span>
+
+                                <span class="quick-action-desc">
+                                    Generate a new invoice
+                                </span>
+
+                            </span>
+
+                            <span class="quick-action-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+
+                        <!-- Equipment Rental -->
+
+                        <button
+                            class="quick-action-btn"
+                            onclick="window.location.href='/rentals'">
+
+                            <span class="quick-action-icon">
+                                🔊
+                            </span>
+
+                            <span class="quick-action-text">
+
+                                <span class="quick-action-title">
+                                    Equipment Rental
+                                </span>
+
+                                <span class="quick-action-desc">
+                                    Rent equipment
+                                </span>
+
+                            </span>
+
+                            <span class="quick-action-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+
+                        <!-- Add Payment -->
+
+                        <button
+                            class="quick-action-btn"
+                            onclick="window.location.href='/payments'">
+
+                            <span class="quick-action-icon">
+                                💳
+                            </span>
+
+                            <span class="quick-action-text">
+
+                                <span class="quick-action-title">
+                                    Add Payment
+                                </span>
+
+                                <span class="quick-action-desc">
+                                    Record a payment
+                                </span>
+
+                            </span>
+
+                            <span class="quick-action-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- =================================================
+         JAVASCRIPT
+    ================================================== -->
+
+    <script>
+
+        function viewBooking(id) {
+
+            window.location.href =
+                "/events/view/" + id;
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+
