@@ -5,11 +5,10 @@ import {
     createInvoice,
     getInvoice,
     updateInvoice,
+    deleteInvoice
 } from "../controllers/invoiceController.js";
 
-
 const router = express.Router();
-
 
 /* =====================================================
    GET ALL INVOICES
@@ -39,7 +38,11 @@ router.get("/view/:id", getInvoice);
 router.post("/edit/:id", updateInvoice);
 
 
+/* =====================================================
+   DELETE INVOICE
+===================================================== */
 
+router.post("/delete/:id", deleteInvoice);
 
 
 export default router;

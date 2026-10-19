@@ -455,3 +455,33 @@ export const updateInvoice = async (req, res) => {
 /* =====================================================
    DELETE INVOICE
 ===================================================== */
+
+export const deleteInvoice = async (req, res) => {
+    try {
+
+        const invoice =
+            await Invoice.findByIdAndDelete(
+                req.params.id
+            );
+
+
+        if (!invoice) {
+
+            return res.status(404).send(
+                "Invoice not found"
+            );
+        }
+
+
+        res.redirect("/invoices");
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).send(
+            "Failed to delete invoice"
+        );
+    }
+};
