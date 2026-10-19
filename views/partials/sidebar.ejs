@@ -1,132 +1,1244 @@
+<%
+    const activePath = typeof currentPath !== "undefined"
+        ? currentPath
+        : (typeof req !== "undefined" ? req.path : "");
+
+    const isActive = (path) => activePath.startsWith(path);
+%>
+
 <style>
-    .sidebar {
-        width: 250px;
-        background: #111827;
-        color: white;
-        padding: 24px 16px;
+/* =========================================================
+   EXPRO AUDIO SIDEBAR
+   Desktop + Mobile Premium Tech Navigation
+========================================================= */
+
+:root {
+    --expro-purple: #8b7cff;
+    --expro-purple-light: #a99fff;
+    --expro-blue: #647cff;
+
+    --expro-dark: #111322;
+    --expro-dark-2: #17192b;
+    --expro-dark-3: #20233a;
+
+    --text-dark: #172033;
+    --text-muted: #667085;
+
+    --border: #e7e9f0;
+}
+
+
+/* =========================================================
+   DESKTOP SIDEBAR
+========================================================= */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: 245px;
+
+    padding: 22px 15px 16px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+
+    border-right: 1px solid var(--border);
+
+    color: var(--text-dark);
+
+    flex-shrink: 0;
+
+    z-index: 1000;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    transition: transform 0.28s ease;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.sidebar *,
+.sidebar *::before,
+.sidebar *::after {
+    box-sizing: border-box;
+}
+
+.sidebar .logo {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 8px 10px 25px;
+
+    margin-bottom: 8px;
+
+    text-decoration: none;
+
+    color: var(--text-dark);
+
+    border-bottom: 1px solid #f0f1f5;
+}
+
+.sidebar .logo-icon {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #7165ff,
+        #9b8cff
+    );
+
+    color: white;
+
+    font-size: 21px;
+
+    box-shadow:
+        0 6px 16px rgba(113, 101, 255, 0.22);
+}
+
+.sidebar .logo-text {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar .logo-text strong {
+    font-size: 24px;
+
+    font-weight: 800;
+
+    letter-spacing: -0.7px;
+
+    white-space: nowrap;
+
+    color: #202137;
+}
+
+.sidebar .logo-text strong span {
+    color: var(--expro-purple);
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    width: 100%;
+}
+
+.sidebar-section-title {
+    padding: 15px 11px 7px;
+
+    color: #9298a8;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.1px;
+}
+
+.sidebar nav > a,
+.sidebar-bottom > a {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+
+    min-height: 47px;
+
+    padding: 9px 11px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    color: #555f73;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar nav > a:hover,
+.sidebar-bottom > a:hover {
+    background: #f5f4ff;
+
+    color: var(--expro-purple);
+}
+
+.sidebar nav > a.active,
+.sidebar-bottom > a.active {
+    background: #eeecff;
+
+    color: var(--expro-purple);
+
+    font-weight: 700;
+}
+
+.sidebar nav > a.active::before,
+.sidebar-bottom > a.active::before {
+    content: "";
+
+    position: absolute;
+
+    top: 10px;
+    bottom: 10px;
+    left: 0;
+
+    width: 3px;
+
+    border-radius: 0 4px 4px 0;
+
+    background: var(--expro-purple);
+}
+
+
+/* =========================================================
+   NAV ICONS
+========================================================= */
+
+.sidebar .nav-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #f4f5fa;
+
+    font-size: 18px;
+
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+.sidebar nav > a:hover .nav-icon,
+.sidebar-bottom > a:hover .nav-icon {
+    background: #e9e7ff;
+
+    transform: translateY(-1px);
+}
+
+.sidebar nav > a.active .nav-icon,
+.sidebar-bottom > a.active .nav-icon {
+    background: #ddd9ff;
+}
+
+.sidebar .nav-label {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+/* =========================================================
+   BILLING
+========================================================= */
+
+.sidebar .billing-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.sidebar .billing-label {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+
+    min-height: 47px;
+
+    padding: 7px 11px;
+
+    color: #555f73;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+.sidebar .billing-label .nav-icon {
+    background: #f4f5fa;
+}
+
+.sidebar .billing-links {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    margin-left: 27px;
+
+    padding-left: 14px;
+
+    border-left: 1px solid #e4e7ef;
+}
+
+.sidebar .billing-links a {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    min-height: 39px;
+
+    padding: 8px 12px;
+
+    border-radius: 8px;
+
+    color: #697386;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease;
+}
+
+.sidebar .billing-links a:hover {
+    background: #f5f4ff;
+
+    color: var(--expro-purple);
+}
+
+.sidebar .billing-links a.active {
+    background: #eeecff;
+
+    color: var(--expro-purple);
+
+    font-weight: 700;
+}
+
+.sidebar .billing-links a.active::before {
+    content: "";
+
+    position: absolute;
+
+    top: 8px;
+    bottom: 8px;
+
+    left: -15px;
+
+    width: 2px;
+
+    border-radius: 3px;
+
+    background: var(--expro-purple);
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+========================================================= */
+
+.sidebar-bottom {
+    margin-top: auto;
+
+    padding-top: 14px;
+
+    border-top: 1px solid #eef0f4;
+}
+
+.sidebar-bottom .nav-icon {
+    background: #f4f5fa;
+}
+
+
+/* =========================================================
+   MOBILE TOP BAR
+========================================================= */
+
+.mobile-topbar {
+    display: none;
+}
+
+
+/* =========================================================
+   MOBILE OVERLAY
+========================================================= */
+
+.mobile-overlay {
+    display: none;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    /* -----------------------------------------------------
+       PAGE MUST NOT BE COVERED
+    ----------------------------------------------------- */
+
+    body {
+        padding-top: 66px !important;
+    }
+
+
+    /* -----------------------------------------------------
+       TOP BAR
+    ----------------------------------------------------- */
+
+    .mobile-topbar {
+        position: fixed;
+
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 66px;
+
         display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
+
+        align-items: center;
+
+        padding: 0 14px;
+
+        z-index: 3000;
+
+        /*
+          Premium tech dark navy / purple
+        */
+        background:
+            radial-gradient(
+                circle at 90% 0%,
+                rgba(139, 124, 255, 0.22),
+                transparent 45%
+            ),
+            linear-gradient(
+                135deg,
+                #0e101c 0%,
+                #15172a 55%,
+                #1b1d34 100%
+            );
+
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+
+        box-shadow:
+            0 8px 30px rgba(15, 17, 35, 0.22);
     }
 
-    .sidebar .logo {
-        font-size: 20px;
-        font-weight: 700;
-        padding: 8px 12px 30px;
+
+    /* -----------------------------------------------------
+       HAMBURGER
+    ----------------------------------------------------- */
+
+    .mobile-menu-btn {
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid rgba(255,255,255,0.10);
+
+        border-radius: 12px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(139,124,255,0.24),
+                rgba(100,124,255,0.13)
+            );
+
+        color: #ffffff;
+
+        font-size: 23px;
+
+        cursor: pointer;
+
+        box-shadow:
+            0 5px 16px rgba(0,0,0,0.20);
+
+        transition:
+            transform 0.18s ease,
+            background 0.18s ease;
     }
 
-    .sidebar .logo span {
-        margin-left: 6px;
+    .mobile-menu-btn:active {
+        transform: scale(0.94);
     }
+
+    .mobile-menu-btn:hover {
+        background:
+            linear-gradient(
+                145deg,
+                rgba(139,124,255,0.35),
+                rgba(100,124,255,0.20)
+            );
+    }
+
+
+    /* -----------------------------------------------------
+       MOBILE BRAND
+    ----------------------------------------------------- */
+
+    .mobile-brand {
+        display: flex;
+        align-items: center;
+
+        margin-left: 12px;
+
+        color: #ffffff;
+
+        font-size: 21px;
+
+        font-weight: 800;
+
+        letter-spacing: -0.5px;
+    }
+
+    .mobile-brand-icon {
+        margin-right: 7px;
+
+        font-size: 18px;
+
+        filter:
+            drop-shadow(
+                0 0 8px rgba(139,124,255,0.45)
+            );
+    }
+
+    .mobile-brand span {
+        color: #a99fff;
+    }
+
+
+    /* -----------------------------------------------------
+       SIDEBAR BECOMES DRAWER
+    ----------------------------------------------------- */
+
+    .sidebar {
+        position: fixed;
+
+        top: 0;
+        left: 0;
+        bottom: 0;
+
+        width: 285px;
+
+        max-width: 84vw;
+
+        height: 100vh;
+
+        padding: 22px 15px 16px;
+
+        background: #ffffff;
+
+        border-right: 1px solid #e5e7ef;
+
+        border-bottom: none;
+
+        z-index: 4000;
+
+        overflow-y: auto;
+
+        transform: translateX(-105%);
+
+        box-shadow:
+            12px 0 35px rgba(15, 17, 35, 0.18);
+
+        transition:
+            transform 0.30s cubic-bezier(
+                0.22,
+                1,
+                0.36,
+                1
+            );
+    }
+
+
+    /* OPEN */
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+
+    /* -----------------------------------------------------
+       SIDEBAR MOBILE CONTENT
+       Keep it like desktop, not grid
+    ----------------------------------------------------- */
 
     .sidebar nav {
         display: flex;
+
         flex-direction: column;
-        gap: 6px;
+
+        gap: 5px;
     }
 
-    .sidebar a {
-        text-decoration: none;
-        color: #aeb7c7;
-        padding: 12px 14px;
-        border-radius: 10px;
-        transition: 0.2s;
+    .sidebar-section-title {
+        display: block;
+
+        padding: 15px 11px 7px;
     }
 
-    .sidebar a:hover,
-    .sidebar a.active {
-        background: #2563eb;
-        color: white;
+    .sidebar nav > a {
+        min-height: 47px;
+
+        flex-direction: row;
+
+        justify-content: flex-start;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding: 9px 11px;
+
+        text-align: left;
+
+        font-size: 14px;
     }
+
+    .sidebar .nav-icon {
+        width: 34px;
+        height: 34px;
+
+        border-radius: 9px;
+
+        font-size: 18px;
+    }
+
+    .sidebar .nav-label {
+        width: auto;
+
+        line-height: 1.35;
+
+        overflow-wrap: normal;
+    }
+
+    .sidebar nav > a.active::before {
+        top: 10px;
+        bottom: 10px;
+
+        left: 0;
+
+        width: 3px;
+
+        height: auto;
+
+        border-radius: 0 4px 4px 0;
+    }
+
+
+    /* -----------------------------------------------------
+       BILLING MOBILE
+    ----------------------------------------------------- */
+
+    .sidebar .billing-group {
+        display: flex;
+
+        flex-direction: column;
+    }
+
+    .sidebar .billing-label {
+        min-height: 47px;
+
+        flex-direction: row;
+
+        justify-content: flex-start;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding: 7px 11px;
+
+        text-align: left;
+
+        font-size: 14px;
+    }
+
+    .sidebar .billing-label .nav-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+    .sidebar .billing-links {
+        display: flex;
+
+        margin-left: 27px;
+
+        padding-left: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       BOTTOM SECTION
+    ----------------------------------------------------- */
 
     .sidebar-bottom {
-        margin-top: auto;
+        display: block;
     }
 
-    @media (max-width: 650px) {
-        .sidebar {
-            width: 100%;
-            padding: 10px;
-            position: relative;
-        }
 
-        .sidebar .logo {
-            padding: 8px 10px 12px;
-            font-size: 18px;
-        }
+    /* -----------------------------------------------------
+       OVERLAY
+    ----------------------------------------------------- */
 
-        .sidebar nav {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-        }
+    .mobile-overlay {
+        position: fixed;
 
-        .sidebar a {
-            padding: 9px 5px;
-            text-align: center;
-            font-size: 11px;
-        }
+        inset: 0;
 
-        .sidebar-bottom {
-            display: none;
-        }
+        display: block;
+
+        background: rgba(8, 10, 20, 0.48);
+
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+
+        opacity: 0;
+
+        visibility: hidden;
+
+        pointer-events: none;
+
+        z-index: 3500;
+
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease;
     }
 
-    @media (max-width: 400px) {
-        .sidebar nav {
-            grid-template-columns: repeat(3, 1fr);
-        }
+    .mobile-overlay.active {
+        opacity: 1;
 
-        .sidebar .logo {
-            font-size: 16px;
-        }
+        visibility: visible;
+
+        pointer-events: auto;
     }
+
+
+    /* -----------------------------------------------------
+       CONTENT HORIZONTAL FIX
+    ----------------------------------------------------- */
+
+    .main-content,
+    .page-content,
+    main {
+        margin-left: 0 !important;
+
+        width: 100% !important;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    body {
+        padding-top: 62px !important;
+    }
+
+    .mobile-topbar {
+        height: 62px;
+
+        padding: 0 11px;
+    }
+
+    .mobile-menu-btn {
+        width: 40px;
+        height: 40px;
+
+        border-radius: 11px;
+
+        font-size: 21px;
+    }
+
+    .mobile-brand {
+        margin-left: 10px;
+
+        font-size: 19px;
+    }
+
+    .sidebar {
+        width: 275px;
+    }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.sidebar a:focus-visible,
+.mobile-menu-btn:focus-visible {
+    outline: 2px solid var(--expro-purple);
+
+    outline-offset: 2px;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sidebar,
+    .mobile-overlay,
+    .mobile-menu-btn,
+    .sidebar a,
+    .sidebar .nav-icon {
+        transition: none;
+    }
+}
 </style>
 
 
-<aside class="sidebar">
+<!-- =========================================================
+     MOBILE TOP BAR
+========================================================= -->
 
-    <div class="logo">
-        🎧 <span>Sound Billing</span>
+<div class="mobile-topbar">
+
+    <button
+        type="button"
+        class="mobile-menu-btn"
+        id="mobileMenuBtn"
+        aria-label="Open menu"
+        aria-expanded="false"
+    >
+        ☰
+    </button>
+
+    <div class="mobile-brand">
+        <span class="mobile-brand-icon">🎧</span>
+        expro<span>.</span>
     </div>
 
-    <nav>
+</div>
 
-       <a href="/dashboard" class="<%= currentPath.startsWith('/dashboard') ? 'active' : '' %>">
-    🏠 Dashboard
-</a>
-        <a href="/customers" class="<%= currentPath.startsWith('/customers') ? 'active' : '' %>">
-            👥 Customers
+
+<!-- =========================================================
+     MOBILE OVERLAY
+========================================================= -->
+
+<div
+    class="mobile-overlay"
+    id="mobileOverlay"
+    aria-hidden="true"
+></div>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar" id="mainSidebar">
+
+    <!-- BRAND -->
+
+    <a href="/" class="logo">
+
+        <div class="logo-icon">
+            🎧
+        </div>
+
+        <div class="logo-text">
+            <strong>expro.</strong>
+        </div>
+
+    </a>
+
+
+    <!-- NAVIGATION -->
+
+    <nav aria-label="Main navigation">
+
+        <div class="sidebar-section-title">
+            Main
+        </div>
+
+
+        <!-- DASHBOARD -->
+
+        <a
+            href="/dashboard"
+            class="<%= isActive('/dashboard') ? 'active' : '' %>"
+        >
+
+            <span class="nav-icon">
+                🏠
+            </span>
+
+            <span class="nav-label">
+                Dashboard
+            </span>
+
         </a>
 
-        <a href="/events" class="<%= currentPath.startsWith('/events') ? 'active' : '' %>">
-            📅 Events
+
+        <!-- CUSTOMERS -->
+
+        <a
+            href="/customers"
+            class="<%= isActive('/customers') ? 'active' : '' %>"
+        >
+
+            <span class="nav-icon">
+                👥
+            </span>
+
+            <span class="nav-label">
+                Customers
+            </span>
+
         </a>
 
-        <a href="/equipment" class="<%= currentPath.startsWith('/equipment') ? 'active' : '' %>">
-            🔊 Equipment
+
+        <!-- EVENTS -->
+
+        <a
+            href="/events"
+            class="<%= isActive('/events') ? 'active' : '' %>"
+        >
+
+            <span class="nav-icon">
+                📅
+            </span>
+
+            <span class="nav-label">
+                Events
+            </span>
+
         </a>
 
-        <a href="/rentals" class="<%= currentPath.startsWith('/rentals') ? 'active' : '' %>">
-            📦 Rentals
+
+        <!-- EQUIPMENT -->
+
+        <a
+            href="/equipment"
+            class="<%= isActive('/equipment') ? 'active' : '' %>"
+        >
+
+            <span class="nav-icon">
+                🔊
+            </span>
+
+            <span class="nav-label">
+                Equipment
+            </span>
+
         </a>
 
-        <a href="/invoices" class="<%= currentPath.startsWith('/invoices') ? 'active' : '' %>">
-            🧾 Invoices
+
+        <!-- RENTALS -->
+
+        <a
+            href="/rentals"
+            class="<%= isActive('/rentals') ? 'active' : '' %>"
+        >
+
+            <span class="nav-icon">
+                📦
+            </span>
+
+            <span class="nav-label">
+                Rentals
+            </span>
+
         </a>
 
-        <a href="/payments" class="<%= currentPath.startsWith('/payments') ? 'active' : '' %>">
-            💳 Payments
-        </a>
 
-   
+        <!-- FINANCE -->
+
+        <div class="sidebar-section-title">
+            Finance
+        </div>
+
+
+        <!-- BILLING -->
+
+        <div class="billing-group">
+
+            <div class="billing-label">
+
+                <span class="nav-icon">
+                    💳
+                </span>
+
+                <span class="nav-label">
+                    Billing
+                </span>
+
+            </div>
+
+
+            <div class="billing-links">
+
+                <!-- INVOICES -->
+
+                <a
+                    href="/invoices"
+                    class="<%= isActive('/invoices') ? 'active' : '' %>"
+                >
+                    <span class="nav-label">
+                        Invoices
+                    </span>
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a
+                    href="/payments"
+                    class="<%= isActive('/payments') ? 'active' : '' %>"
+                >
+                    <span class="nav-label">
+                        Payments
+                    </span>
+                </a>
+
+
+                
+
+            </div>
+
+        </div>
 
     </nav>
 
+
+    <!-- SETTINGS / BOTTOM -->
+
     <div class="sidebar-bottom">
-        <a href="#" class="<%= currentPath.startsWith('/settings') ? 'active' : '' %>">
-            ⚙️ Settings
-        </a>
+
+      
+
     </div>
 
 </aside>
+
+
+<script>
+(function () {
+
+    const menuBtn =
+        document.getElementById("mobileMenuBtn");
+
+    const sidebar =
+        document.getElementById("mainSidebar");
+
+    const overlay =
+        document.getElementById("mobileOverlay");
+
+
+    if (!menuBtn || !sidebar || !overlay) {
+        return;
+    }
+
+
+    /* =====================================================
+       OPEN MENU
+    ===================================================== */
+
+    function openMenu() {
+
+        sidebar.classList.add("mobile-open");
+
+        overlay.classList.add("active");
+
+        menuBtn.innerHTML = "✕";
+
+        menuBtn.setAttribute(
+            "aria-label",
+            "Close menu"
+        );
+
+        menuBtn.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.style.overflow = "hidden";
+    }
+
+
+    /* =====================================================
+       CLOSE MENU
+    ===================================================== */
+
+    function closeMenu() {
+
+        sidebar.classList.remove("mobile-open");
+
+        overlay.classList.remove("active");
+
+        menuBtn.innerHTML = "☰";
+
+        menuBtn.setAttribute(
+            "aria-label",
+            "Open menu"
+        );
+
+        menuBtn.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        document.body.style.overflow = "";
+    }
+
+
+    /* =====================================================
+       TOGGLE
+    ===================================================== */
+
+    menuBtn.addEventListener("click", function () {
+
+        const isOpen =
+            sidebar.classList.contains("mobile-open");
+
+        if (isOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+
+    });
+
+
+    /* =====================================================
+       OVERLAY CLICK
+    ===================================================== */
+
+    overlay.addEventListener(
+        "click",
+        closeMenu
+    );
+
+
+    /* =====================================================
+       CLICK NAVIGATION
+       Close drawer before moving to next page
+    ===================================================== */
+
+    sidebar
+        .querySelectorAll("a")
+        .forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        window.innerWidth <= 700
+                    ) {
+                        closeMenu();
+                    }
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       ESC KEY
+    ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                sidebar.classList.contains("mobile-open")
+            ) {
+                closeMenu();
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       RESIZE
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            if (window.innerWidth > 700) {
+                closeMenu();
+            }
+
+        }
+    );
+
+})();
+</script>

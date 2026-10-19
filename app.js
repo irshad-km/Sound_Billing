@@ -20,7 +20,8 @@ app.use((req, res, next) => {
     res.locals.currentPath = req.path;
     next();
 });
-const PORT = 3000;
+
+const PORT = process.env.PORT || 3000;
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -42,6 +43,6 @@ app.use("/payments", paymentRoutes);
 
 
 
-app.listen(PORT, () => {
-    console.log(`🎧 Sound Billing running at http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🎧 Sound Billing running on port ${PORT}`);
 });

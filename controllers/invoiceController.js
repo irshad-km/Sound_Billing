@@ -2,6 +2,11 @@ import Invoice from "../models/Invoice.js";
 import Booking from "../models/Booking.js";
 import Rental from "../models/Rental.js";
 
+
+/* =====================================================
+   GET ALL INVOICES
+===================================================== */
+
 export const getInvoices = async (req, res) => {
     try {
         const invoices = await Invoice.find()
@@ -17,10 +22,27 @@ export const getInvoices = async (req, res) => {
             .populate("customer")
             .sort({ eventDate: 1 });
 
+        const rentals = await Rental.find();
+
+        const bookingRentalTotals = {};
+
+        for (const rental of rentals) {
+            const bookingId = rental.booking.toString();
+
+            bookingRentalTotals[bookingId] =
+                (bookingRentalTotals[bookingId] || 0) +
+                Number(rental.rentalAmount || 0);
+        }
+
+        console.log("Booking IDs:", bookings.map(b => b._id.toString()));
+        console.log("Rental totals:", bookingRentalTotals);
+
         res.render("invoices", {
             invoices,
-            bookings
+            bookings,
+            bookingRentalTotals
         });
+        console.log("RENTAL TOTALS:", bookingRentalTotals);
 
     } catch (error) {
         console.error(error);
@@ -29,32 +51,89 @@ export const getInvoices = async (req, res) => {
 };
 
 
+/* =====================================================
+   CREATE INVOICE
+===================================================== */
+
 export const createInvoice = async (req, res) => {
     try {
 
         const {
             booking,
-            rentalAmount,
             transportCharge,
             labourCharge,
             extraCharge,
-            discount,
-            advance,
-            notes
+            discount
         } = req.body;
 
 
-        const rental = Number(rentalAmount) || 0;
-        const transport = Number(transportCharge) || 0;
-        const labour = Number(labourCharge) || 0;
-        const extra = Number(extraCharge) || 0;
-        const discountAmount = Number(discount) || 0;
-        const paid = Number(advance) || 0;
+        /* =================================================
+           FIND BOOKING
+        ================================================= */
 
+        const selectedBooking =
+            await Booking.findById(booking);
+
+
+        if (!selectedBooking) {
+
+            return res.status(404).send(
+                "Booking not found"
+            );
+        }
+
+
+        /* =================================================
+           GET RENTALS
+        ================================================= */
+
+        const rentals = await Rental.find({
+            booking: selectedBooking._id
+        });
+
+
+        let rentalAmount = 0;
+
+
+        for (const rental of rentals) {
+
+            rentalAmount +=
+                Number(rental.rentalAmount) || 0;
+        }
+
+
+        /* =================================================
+           ADVANCE FROM BOOKING
+        ================================================= */
+
+        const advance =
+            Number(selectedBooking.advance) || 0;
+
+
+        /* =================================================
+           OTHER CHARGES
+        ================================================= */
+
+        const transport =
+            Number(transportCharge) || 0;
+
+        const labour =
+            Number(labourCharge) || 0;
+
+        const extra =
+            Number(extraCharge) || 0;
+
+        const discountAmount =
+            Number(discount) || 0;
+
+
+        /* =================================================
+           TOTAL
+        ================================================= */
 
         const totalAmount = Number(
             Math.max(
-                rental +
+                rentalAmount +
                 transport +
                 labour +
                 extra -
@@ -63,27 +142,50 @@ export const createInvoice = async (req, res) => {
             ).toFixed(2)
         );
 
+
+        /* =================================================
+           BALANCE
+        ================================================= */
+
         const balance = Number(
             Math.max(
-                totalAmount - paid,
+                totalAmount - advance,
                 0
             ).toFixed(2)
         );
 
 
+        /* =================================================
+           PAYMENT STATUS
+        ================================================= */
+
         let paymentStatus = "Pending";
 
-        if (paid >= totalAmount && totalAmount > 0) {
+
+        if (
+            advance >= totalAmount &&
+            totalAmount > 0
+        ) {
+
             paymentStatus = "Paid";
-        } else if (paid > 0) {
+
+        } else if (advance > 0) {
+
             paymentStatus = "Partial";
         }
 
 
-        const invoiceNumber =
-            "INV-" +
-            Date.now();
+        /* =================================================
+           INVOICE NUMBER
+        ================================================= */
 
+        const invoiceNumber =
+            "INV-" + Date.now();
+
+
+        /* =================================================
+           CREATE
+        ================================================= */
 
         await Invoice.create({
 
@@ -91,7 +193,7 @@ export const createInvoice = async (req, res) => {
 
             booking,
 
-            rentalAmount: rental,
+            rentalAmount,
 
             transportCharge: transport,
 
@@ -103,18 +205,17 @@ export const createInvoice = async (req, res) => {
 
             totalAmount,
 
-            advance: paid,
+            advance,
 
             balance,
 
-            paymentStatus,
-
-            notes
+            paymentStatus
 
         });
 
 
         res.redirect("/invoices");
+
 
     } catch (error) {
 
@@ -123,122 +224,234 @@ export const createInvoice = async (req, res) => {
         res.status(500).send(
             "Failed to create invoice"
         );
-
     }
 };
 
 
+/* =====================================================
+   GET SINGLE INVOICE
+===================================================== */
+
 export const getInvoice = async (req, res) => {
     try {
-        const invoice = await Invoice.findById(req.params.id)
-            .populate({
-                path: "booking",
-                populate: {
-                    path: "customer"
-                }
-            });
+
+        const invoice =
+            await Invoice.findById(req.params.id)
+                .populate({
+                    path: "booking",
+                    populate: {
+                        path: "customer"
+                    }
+                });
+
 
         if (!invoice) {
-            return res.status(404).send("Invoice not found");
+
+            return res.status(404).send(
+                "Invoice not found"
+            );
         }
+
 
         res.render("invoice-view", {
             invoice
         });
 
+
     } catch (error) {
+
         console.error(error);
-        res.status(500).send("Failed to load invoice");
+
+        res.status(500).send(
+            "Failed to load invoice"
+        );
     }
 };
+
+
+/* =====================================================
+   UPDATE INVOICE
+===================================================== */
 
 export const updateInvoice = async (req, res) => {
     try {
+
         const {
             booking,
-            rentalAmount,
             transportCharge,
             labourCharge,
             extraCharge,
-            discount,
-            advance,
-            notes
+            discount
         } = req.body;
 
-        const rental = Number(rentalAmount) || 0;
-        const transport = Number(transportCharge) || 0;
-        const labour = Number(labourCharge) || 0;
-        const extra = Number(extraCharge) || 0;
-        const discountAmount = Number(discount) || 0;
-        const paid = Number(advance) || 0;
 
-        const totalAmount = Math.max(
-            rental +
-            transport +
-            labour +
-            extra -
-            discountAmount,
-            0
+        /* =================================================
+           FIND BOOKING
+        ================================================= */
+
+        const selectedBooking =
+            await Booking.findById(booking);
+
+
+        if (!selectedBooking) {
+
+            return res.status(404).send(
+                "Booking not found"
+            );
+        }
+
+
+        /* =================================================
+           GET RENTALS
+        ================================================= */
+
+        const rentals = await Rental.find({
+            booking: selectedBooking._id
+        });
+
+
+        let rentalAmount = 0;
+
+
+        for (const rental of rentals) {
+
+            rentalAmount +=
+                Number(rental.rentalAmount) || 0;
+        }
+
+
+        /* =================================================
+           ADVANCE
+        ================================================= */
+
+        const advance =
+            Number(selectedBooking.advance) || 0;
+
+
+        /* =================================================
+           OTHER CHARGES
+        ================================================= */
+
+        const transport =
+            Number(transportCharge) || 0;
+
+        const labour =
+            Number(labourCharge) || 0;
+
+        const extra =
+            Number(extraCharge) || 0;
+
+        const discountAmount =
+            Number(discount) || 0;
+
+
+        /* =================================================
+           TOTAL
+        ================================================= */
+
+        const totalAmount = Number(
+            Math.max(
+                rentalAmount +
+                transport +
+                labour +
+                extra -
+                discountAmount,
+                0
+            ).toFixed(2)
         );
 
-        const balance = Math.max(
-            totalAmount - paid,
-            0
+
+        /* =================================================
+           BALANCE
+        ================================================= */
+
+        const balance = Number(
+            Math.max(
+                totalAmount - advance,
+                0
+            ).toFixed(2)
         );
+
+
+        /* =================================================
+           PAYMENT STATUS
+        ================================================= */
 
         let paymentStatus = "Pending";
 
-        if (paid >= totalAmount && totalAmount > 0) {
+
+        if (
+            advance >= totalAmount &&
+            totalAmount > 0
+        ) {
+
             paymentStatus = "Paid";
-        } else if (paid > 0) {
+
+        } else if (advance > 0) {
+
             paymentStatus = "Partial";
         }
 
-        const invoice = await Invoice.findByIdAndUpdate(
-            req.params.id,
-            {
-                booking,
-                rentalAmount: rental,
-                transportCharge: transport,
-                labourCharge: labour,
-                extraCharge: extra,
-                discount: discountAmount,
-                totalAmount,
-                advance: paid,
-                balance,
-                paymentStatus,
-                notes
-            },
-            {
-                new: true,
-                runValidators: true
-            }
+
+        /* =================================================
+           UPDATE
+        ================================================= */
+
+        const invoice =
+            await Invoice.findByIdAndUpdate(
+                req.params.id,
+
+                {
+                    booking,
+
+                    rentalAmount,
+
+                    transportCharge: transport,
+
+                    labourCharge: labour,
+
+                    extraCharge: extra,
+
+                    discount: discountAmount,
+
+                    totalAmount,
+
+                    advance,
+
+                    balance,
+
+                    paymentStatus
+                },
+
+                {
+                    new: true,
+                    runValidators: true
+                }
+            );
+
+
+        if (!invoice) {
+
+            return res.status(404).send(
+                "Invoice not found"
+            );
+        }
+
+
+        res.redirect("/invoices");
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).send(
+            "Failed to update invoice"
         );
-
-        if (!invoice) {
-            return res.status(404).send("Invoice not found");
-        }
-
-        res.redirect("/invoices");
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Failed to update invoice");
     }
 };
 
-export const deleteInvoice = async (req, res) => {
-    try {
-        const invoice = await Invoice.findByIdAndDelete(req.params.id);
 
-        if (!invoice) {
-            return res.status(404).send("Invoice not found");
-        }
-
-        res.redirect("/invoices");
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Failed to delete invoice");
-    }
-};
+/* =====================================================
+   DELETE INVOICE
+===================================================== */

@@ -1,509 +1,1401 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Sound Billing</title>
 
-    <title>Sound Billing | Dashboard</title>
-
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
-        /* =====================================================
-           DASHBOARD
-        ===================================================== */
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 26px;
+        :root {
+            --primary: #635bff;
+            --primary-dark: #5145e5;
+            --primary-light: #f0efff;
+            --bg: #f7f8fc;
+            --surface: #ffffff;
+            --surface-soft: #fafbff;
+            --text: #171c2b;
+            --text-secondary: #667085;
+            --text-muted: #98a2b3;
+            --border: #e8ebf2;
+            --green: #079455;
+            --green-bg: #ecfdf3;
+            --orange: #dc6803;
+            --orange-bg: #fffaeb;
+            --red: #d92d20;
+            --red-bg: #fef3f2;
+            --blue: #1570ef;
+            --blue-bg: #eff8ff;
+            --radius: 16px;
+            --shadow: 0 4px 20px rgba(16, 24, 40, 0.035);
         }
 
-        .dashboard-header h1 {
+        * {
+            box-sizing: border-box;
             margin: 0;
-            font-size: 30px;
-            font-weight: 700;
-            color: #111827;
+            padding: 0;
         }
 
-        .dashboard-header p {
-            margin: 6px 0 0;
-            color: #6b7280;
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Inter", sans-serif;
             font-size: 14px;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .profile {
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .main {
+            min-height: 100vh;
+            margin-left: 220px;
+            padding: 30px 32px 45px;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* ================= HEADER ================= */
+
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 30px;
+            animation: fadeUp .45s ease both;
+        }
+
+        .welcome h1 {
+            font-size: clamp(23px, 2.5vw, 29px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #101828;
+        }
+
+        .welcome p {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .header-right {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .avatar {
-            width: 44px;
-            height: 44px;
+        .today-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 11px;
+            color: #475467;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .today-dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #2563eb;
-            color: white;
+            background: #12b76a;
+            box-shadow: 0 0 0 4px #ecfdf3;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 7px 13px 7px 7px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 12px;
+        }
+
+        .admin-avatar {
+            width: 39px;
+            height: 39px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .profile-info strong {
-            display: block;
-            color: #111827;
-            font-size: 14px;
-        }
-
-        .profile-info small {
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-
-        /* =====================================================
-           STAT CARDS
-        ===================================================== */
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 24px;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.035);
-        }
-
-        .card span {
-            display: block;
-            color: #6b7280;
+            border-radius: 11px;
+            color: white;
+            background: linear-gradient(135deg, #756cff, #5145e5);
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 800;
         }
 
-        .card h2 {
-            margin: 9px 0 5px;
-            font-size: 27px;
-            color: #111827;
+        .admin-info strong,
+        .admin-info span {
+            display: block;
         }
 
-        .card small {
-            color: #9ca3af;
+        .admin-info strong {
             font-size: 12px;
+            font-weight: 750;
         }
 
+        .admin-info span {
+            margin-top: 4px;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
 
-        /* =====================================================
-           MAIN CONTENT
-        ===================================================== */
+        /* ================= SECTION ================= */
 
-        .content-grid {
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .section-heading h2 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -.35px;
+        }
+
+        .section-heading p {
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .section-link {
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats-grid {
             display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 17px;
+            margin-bottom: 30px;
+        }
 
-            /* Large table + proper Quick Action panel */
-            grid-template-columns: minmax(0, 3.7fr) minmax(260px, 1fr);
+        .stat-card {
+            position: relative;
+            min-width: 0;
+            padding: 21px;
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+            animation: fadeUp .5s ease both;
+        }
 
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: #d9d6fe;
+            box-shadow: 0 12px 30px rgba(16, 24, 40, .07);
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .stat-title {
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            width: 41px;
+            height: 41px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 12px;
+            font-size: 19px;
+        }
+
+        .icon-purple {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .icon-green {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .icon-orange {
+            background: var(--orange-bg);
+            color: var(--orange);
+        }
+
+        .icon-blue {
+            background: var(--blue-bg);
+            color: var(--blue);
+        }
+
+        .stat-value {
+            margin-top: 19px;
+            color: #101828;
+            font-size: clamp(22px, 2.1vw, 29px);
+            font-weight: 800;
+            letter-spacing: -.9px;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-description {
+            margin-top: 9px;
+            color: var(--text-muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .stat-description strong {
+            color: #475467;
+            font-weight: 700;
+        }
+
+        /* ================= MAIN GRID ================= */
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
             gap: 20px;
-            align-items: stretch;
+            margin-bottom: 30px;
         }
 
         .panel {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.035);
-        }
-
-        .booking-panel {
             min-width: 0;
-            padding: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            animation: fadeUp .55s ease both;
         }
-
-
-        /* =====================================================
-           PANEL HEADER
-        ===================================================== */
 
         .panel-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 22px 23px;
+            border-bottom: 1px solid #f0f1f5;
         }
 
         .panel-header h2 {
-            margin: 0;
-            font-size: 19px;
-            color: #111827;
+            font-size: 15px;
+            font-weight: 800;
         }
 
-        .panel-subtitle {
-            margin: 5px 0 0;
-            color: #6b7280;
+        .panel-header p {
+            margin-top: 5px;
+            color: var(--text-muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .panel-body {
+            padding: 23px;
+        }
+
+        .small-badge {
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            background: var(--surface-soft);
+            border-radius: 8px;
+            color: #667085;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* ================= PAYMENT ================= */
+
+        .payment-total-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .payment-total-label {
+            color: var(--text-secondary);
             font-size: 12px;
         }
 
+        .payment-total {
+            margin-top: 8px;
+            font-size: clamp(25px, 3vw, 34px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            overflow-wrap: anywhere;
+        }
 
-        /* =====================================================
-           TABLE
-        ===================================================== */
+        .collection-rate {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .collection-rate strong {
+            display: block;
+            font-size: 23px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .collection-rate span {
+            display: block;
+            margin-top: 5px;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .progress {
+            width: 100%;
+            height: 9px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: #f0efff;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #847aff, #635bff);
+            transition: width 1s ease;
+        }
+
+        .progress-caption {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 9px;
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .payment-details {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 11px;
+            margin-top: 23px;
+        }
+
+        .payment-detail {
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid #eff0f5;
+            border-radius: 11px;
+            background: #fbfbfe;
+        }
+
+        .payment-detail span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .payment-detail strong {
+            display: block;
+            margin-top: 9px;
+            font-size: clamp(13px, 1.4vw, 16px);
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .amount-green {
+            color: var(--green);
+        }
+
+        .amount-red {
+            color: var(--red);
+        }
+
+        .amount-purple {
+            color: var(--primary);
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            min-width: 0;
+            padding: 15px;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #fff;
+            transition: transform .2s ease, border-color .2s ease, background .2s ease;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-2px);
+            border-color: #c9c4ff;
+            background: #fcfbff;
+        }
+
+        .quick-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 10px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        .quick-action strong {
+            display: block;
+            color: #101828;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.6;
+        }
+
+        .quick-action span {
+            display: block;
+            margin-top: 4px;
+            color: var(--text-muted);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        /* ================= INSIGHTS ================= */
+
+        .insights {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .insight-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            padding: 18px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            transition: transform .2s ease;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .insight-icon {
+            width: 37px;
+            height: 37px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 11px;
+            background: #f2f4f7;
+            font-size: 17px;
+        }
+
+        .insight-content {
+            min-width: 0;
+        }
+
+        .insight-content span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .insight-content strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 19px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .insight-content p {
+            margin-top: 5px;
+            color: var(--text-muted);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        /* ================= EVENTS ================= */
+
+        .events-panel {
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .events-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 22px 23px;
+        }
+
+        .events-header h2 {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .events-header p {
+            margin-top: 5px;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .events-header a {
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 750;
+        }
 
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
-            border: 1px solid #eef0f3;
-            border-radius: 10px;
+            -webkit-overflow-scrolling: touch;
         }
 
-        table {
+        .events-table {
             width: 100%;
-            min-width: 980px;
+            min-width: 800px;
             border-collapse: collapse;
-            background: #ffffff;
+            text-align: left;
         }
 
-        th {
-            padding: 13px 12px;
-            text-align: left;
-            background: #f8fafc;
-            color: #64748b;
+        .events-table thead {
+            background: #fafbfe;
+        }
+
+        .events-table th {
+            padding: 13px 20px;
+            border-top: 1px solid #f0f1f5;
+            border-bottom: 1px solid #f0f1f5;
+            color: #667085;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            white-space: nowrap;
+        }
+
+        .events-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f1f5;
+            color: #475467;
             font-size: 12px;
-            font-weight: 600;
-            border-bottom: 1px solid #e5e7eb;
             white-space: nowrap;
         }
 
-        td {
-            padding: 14px 12px;
-            text-align: left;
-            color: #374151;
-            font-size: 13px;
-            border-bottom: 1px solid #f0f1f3;
-            white-space: nowrap;
+        .events-table tbody tr {
+            transition: background .18s ease;
+            cursor: pointer;
         }
 
-        tbody tr:last-child td {
+        .events-table tbody tr:hover {
+            background: #fafaff;
+        }
+
+        .events-table tbody tr:last-child td {
             border-bottom: none;
         }
 
-        tbody tr:hover {
-            background: #fafcff;
+        .customer-name {
+            color: #101828;
+            font-weight: 750;
         }
 
-        td strong {
-            color: #111827;
-            font-weight: 600;
+        .event-date {
+            color: #344054;
+            font-weight: 650;
         }
 
-
-        /* =====================================================
-           STATUS
-        ===================================================== */
+        .event-type {
+            display: inline-block;
+            max-width: 150px;
+            padding: 6px 9px;
+            overflow: hidden;
+            border: 1px solid #e8e7ff;
+            border-radius: 7px;
+            background: #f7f6ff;
+            color: #5145cd;
+            font-size: 10px;
+            font-weight: 750;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+        }
 
         .status {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            padding: 5px 10px;
+            gap: 6px;
+            padding: 6px 9px;
             border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 750;
         }
 
-        .status.paid {
-            background: #dcfce7;
-            color: #166534;
+        .status::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
         }
 
-        .status.partial {
-            background: #fef3c7;
-            color: #92400e;
+        .status-paid {
+            color: var(--green);
+            background: var(--green-bg);
         }
 
-        .status.pending {
-            background: #fee2e2;
-            color: #991b1b;
+        .status-partial {
+            color: var(--orange);
+            background: var(--orange-bg);
         }
 
-
-        /* =====================================================
-           VIEW BUTTON
-        ===================================================== */
-
-        .action-btn {
-            border: 1px solid #dbeafe;
-            background: #eff6ff;
-            color: #2563eb;
-            padding: 7px 12px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: 0.2s;
+        .status-pending {
+            color: var(--red);
+            background: var(--red-bg);
         }
-
-        .action-btn:hover {
-            background: #2563eb;
-            color: white;
-        }
-
-
-        /* =====================================================
-           QUICK ACTION PANEL
-        ===================================================== */
-
-        .quick-actions-panel {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .quick-actions-panel .panel-header {
-            margin-bottom: 16px;
-        }
-
-        .quick-actions-panel .panel-header h2 {
-            font-size: 18px;
-        }
-
-        .quick-actions-panel .panel-subtitle {
-            font-size: 12px;
-        }
-
-        .actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-
-        /* =====================================================
-           QUICK ACTION BUTTON
-        ===================================================== */
-
-        .quick-action-btn {
-            width: 100%;
-            min-height: 48px;
-
-            display: flex;
-            align-items: center;
-            gap: 12px;
-
-            padding: 11px 13px;
-
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-
-            color: #111827;
-            text-align: left;
-
-            cursor: pointer;
-
-            transition:
-                background 0.2s ease,
-                border-color 0.2s ease,
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        .quick-action-btn:hover {
-            background: #eff6ff;
-            border-color: #bfdbfe;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08);
-        }
-
-        .quick-action-icon {
-            width: 34px;
-            height: 34px;
-
-            flex-shrink: 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-
-            font-size: 16px;
-        }
-
-        .quick-action-text {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .quick-action-title {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .quick-action-desc {
-            display: block;
-            margin-top: 2px;
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        .quick-action-arrow {
-            color: #9ca3af;
-            font-size: 15px;
-            flex-shrink: 0;
-        }
-
-
-        /* =====================================================
-           EMPTY STATE
-        ===================================================== */
 
         .empty-state {
+            padding: 45px 20px;
             text-align: center;
-            padding: 40px 15px;
-            color: #6b7280;
+            color: var(--text-muted);
+            font-size: 12px;
         }
 
         .empty-state-icon {
-            font-size: 34px;
-            margin-bottom: 8px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            border-radius: 14px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 22px;
         }
 
-
-        /* =====================================================
-           RESPONSIVE
-        ===================================================== */
-
-        @media (max-width: 1200px) {
-
-            .content-grid {
-                grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
-            }
-
+        .empty-state strong {
+            display: block;
+            color: #344054;
+            font-size: 13px;
         }
 
-
-        @media (max-width: 1050px) {
-
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .quick-actions-panel {
-                width: 100%;
-            }
-
-            .actions {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-
+        .empty-state p {
+            margin-top: 6px;
         }
 
+        /* =========================================================
+           QUICK CALCULATOR - IMPROVED VISIBILITY
+        ========================================================= */
+
+        .floating-calculator {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .calculator-card {
+            width: 500px;
+            max-height: min(86vh, 820px);
+            overflow-y: auto;
+            padding: 23px;
+            border: 1px solid #dfe3e8;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 22px 65px rgba(16, 24, 40, .2);
+            display: none;
+        }
+
+        .calculator-card::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .calculator-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .calculator-card::-webkit-scrollbar-thumb {
+            background: #cfd4dc;
+            border-radius: 10px;
+        }
+
+        .calculator-card.show {
+            display: block;
+            animation: calculatorOpen .2s ease both;
+        }
+
+        /* Calculator Header */
+
+        .calculator-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .calculator-title h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #101828;
+        }
+
+        .calculator-title p {
+            margin-top: 6px;
+            color: #667085;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .calculator-close {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 9px;
+            background: #f2f4f7;
+            color: #344054;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .calculator-close:hover {
+            background: #eaecf0;
+        }
+
+        /* Section Titles */
+
+        .items-title,
+        .expense-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 11px;
+        }
+
+        .items-title strong,
+        .expense-header strong {
+            font-size: 13px;
+            font-weight: 800;
+            color: #344054;
+        }
+
+        .items-title span,
+        .expense-header span {
+            color: #667085;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Equipment Row */
+
+        .calculator-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 70px 105px 32px;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 9px;
+        }
+
+        .calculator-item select,
+        .calculator-item input {
+            width: 100%;
+            min-width: 0;
+            height: 43px;
+            padding: 0 11px;
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+            outline: none;
+            background: white;
+            color: #344054;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .calculator-item select {
+            cursor: pointer;
+        }
+
+        .calculator-item select:focus,
+        .calculator-item input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 91, 255, .10);
+        }
+
+        .calculator-item input::placeholder {
+            color: #98a2b3;
+            opacity: 1;
+        }
+
+        .calculator-item .item-rate {
+            background: #f9fafb;
+            color: #344054;
+            font-weight: 600;
+        }
+
+        .item-price {
+            position: relative;
+        }
+
+        .item-price span,
+        .expense-input span {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #667085;
+            font-size: 12px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .item-price input {
+            padding-left: 24px;
+        }
+
+        .remove-item {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #98a2b3;
+            font-size: 20px;
+        }
+
+        .remove-item:hover {
+            color: var(--red);
+            background: var(--red-bg);
+        }
+
+        /* Add Equipment */
+
+        .add-item-btn {
+            width: 100%;
+            height: 42px;
+            margin-top: 5px;
+            border: 1px dashed #bfc5ce;
+            border-radius: 9px;
+            background: #fafbff;
+            color: #475467;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .add-item-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f8f7ff;
+        }
+
+        /* Additional Expenses */
+
+        .expense-section {
+            margin-top: 21px;
+            padding-top: 20px;
+            border-top: 1px solid #eef0f3;
+        }
+
+        .expense-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .expense-field {
+            min-width: 0;
+        }
+
+        .expense-field label {
+            display: block;
+            margin-bottom: 7px;
+            color: #344054;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .expense-input {
+            position: relative;
+        }
+
+        .expense-input input {
+            width: 100%;
+            height: 44px;
+            padding: 0 12px 0 29px;
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+            outline: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: #344054;
+            background: white;
+        }
+
+        .expense-input input::placeholder {
+            color: #98a2b3;
+            opacity: 1;
+        }
+
+        .expense-input input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 91, 255, .10);
+        }
+
+        /* Calculator Total */
+
+        .calculator-total {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #242344, #17172c);
+            color: white;
+        }
+
+        .total-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .total-line span {
+            color: #d0d5dd;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .total-line strong {
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .total-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px 18px;
+            margin-top: 13px;
+            padding-top: 13px;
+            border-top: 1px solid rgba(255,255,255,.14);
+            color: #d0d5dd;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .total-breakdown span span {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .calculator-clear {
+            width: 100%;
+            height: 41px;
+            margin-top: 11px;
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+            background: white;
+            color: #475467;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .calculator-clear:hover {
+            background: #f9fafb;
+            border-color: #98a2b3;
+        }
+
+        /* Floating Button */
+
+        .calculator-toggle {
+            width: 59px;
+            height: 59px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #756cff, #5145e5);
+            color: white;
+            font-size: 29px;
+            box-shadow: 0 12px 30px rgba(99, 91, 255, .35);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .calculator-toggle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 35px rgba(99, 91, 255, .4);
+        }
+
+        /* ================= ANIMATIONS ================= */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes calculatorOpen {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1250px) {
+
+            .main {
+                padding: 25px 23px 40px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .overview-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .insights {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+
+            .main {
+                margin-left: 0;
+                padding: 24px;
+            }
+        }
 
         @media (max-width: 650px) {
 
-            .dashboard-header {
+            .main {
+                padding: 18px 14px 35px;
+            }
+
+            .top-header {
                 align-items: flex-start;
             }
 
-            .dashboard-header h1 {
-                font-size: 24px;
+            .welcome h1 {
+                font-size: 23px;
             }
 
-            .profile {
+            .welcome p {
+                max-width: 300px;
+                font-size: 12px;
+            }
+
+            .header-right {
+                gap: 0;
+            }
+
+            .today-label,
+            .admin-profile {
                 display: none;
             }
 
-            .stats {
+            .stats-grid {
+                gap: 11px;
+            }
+
+            .stat-card {
+                padding: 16px;
+                border-radius: 13px;
+            }
+
+            .stat-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+
+            .stat-value {
+                margin-top: 15px;
+                font-size: 23px;
+            }
+
+            .stat-description {
+                font-size: 10px;
+            }
+
+            .panel-header,
+            .panel-body,
+            .events-header {
+                padding: 18px;
+            }
+
+            .payment-details {
                 grid-template-columns: 1fr;
             }
 
-            .booking-panel,
-            .quick-actions-panel {
+            .payment-detail {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .payment-detail strong {
+                margin-top: 0;
+                font-size: 14px;
+            }
+
+            .insights {
+                grid-template-columns: 1fr;
+                gap: 11px;
+            }
+
+            .insight-card {
                 padding: 15px;
             }
 
-            .actions {
+            .quick-actions {
+                gap: 9px;
+            }
+
+            .quick-action {
+                padding: 12px;
+                gap: 9px;
+            }
+
+            .quick-icon {
+                width: 31px;
+                height: 31px;
+                font-size: 15px;
+            }
+
+            .floating-calculator {
+                right: 14px;
+                bottom: 16px;
+            }
+
+            .calculator-card {
+                width: min(500px, calc(100vw - 28px));
+                max-height: 82vh;
+                padding: 18px;
+            }
+
+            .calculator-item {
+                grid-template-columns: minmax(0, 1fr) 58px 85px 28px;
+                gap: 6px;
+            }
+
+            .calculator-item select,
+            .calculator-item input {
+                height: 42px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .expense-grid {
                 grid-template-columns: 1fr;
             }
 
+            .calculator-card {
+                padding: 16px;
+            }
+
+            .calculator-item {
+                grid-template-columns: minmax(0, 1fr) 55px 78px 27px;
+                gap: 5px;
+            }
+
+            .calculator-item select,
+            .calculator-item input {
+                padding-left: 7px;
+                padding-right: 7px;
+                font-size: 11px;
+            }
+
+            .item-price input {
+                padding-left: 21px;
+            }
+
+            .total-breakdown {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 400px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 18px;
+            }
+
+            .stat-value {
+                font-size: 26px;
+            }
+
+            .calculator-item {
+                grid-template-columns: minmax(0, 1fr) 45px 68px 25px;
+                gap: 4px;
+            }
+
+            .calculator-item select,
+            .calculator-item input {
+                padding-right: 4px;
+                padding-left: 5px;
+                font-size: 10px;
+            }
+
+            .item-price input {
+                padding-left: 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
 
-
 <body>
 
-    <div class="app">
+    <%- include("partials/sidebar") %>
 
-        <!-- =================================================
-             SIDEBAR
-        ================================================== -->
+    <main class="main">
 
-        <%- include("partials/sidebar") %>
+        <div class="dashboard-container">
 
+            <!-- HEADER -->
 
-        <!-- =================================================
-             MAIN
-        ================================================== -->
+            <header class="top-header">
 
-        <main class="main">
+                <div class="welcome">
 
-
-            <!-- =================================================
-                 HEADER
-            ================================================== -->
-
-            <header class="dashboard-header">
-
-                <div>
-
-                    <h1>
-                        Dashboard
+                    <h1 id="welcomeTitle">
+                        Welcome back, Irshad 👋
                     </h1>
 
                     <p>
-                        Welcome back 👋
+                        Here's an overview of your business and upcoming events.
                     </p>
 
                 </div>
 
+                <div class="header-right">
 
-                <div class="profile">
+                    <div class="today-label">
 
-                    <div class="avatar">
-                        A
+                        <span class="today-dot"></span>
+
+                        <span id="todayDate"></span>
+
                     </div>
 
-                    <div class="profile-info">
+                    <div class="admin-profile">
 
-                        <strong>
-                            Admin
-                        </strong>
+                        <div class="admin-avatar">
+                            IR
+                        </div>
 
-                        <small>
-                            Administrator
-                        </small>
+                        <div class="admin-info">
+
+                            <strong>
+                                Irshad
+                            </strong>
+
+                            <span>
+                                Administrator
+                            </span>
+
+                        </div>
 
                     </div>
 
@@ -511,160 +1403,799 @@
 
             </header>
 
+            <%
+                const safeBookings =
+                    Array.isArray(bookings) ? bookings : [];
 
-            <!-- =================================================
-                 STATISTICS
-            ================================================== -->
+                const safeInvoices =
+                    Array.isArray(invoices) ? invoices : [];
 
-            <section class="stats">
+                const safeEquipment =
+                    Array.isArray(equipment) ? equipment : [];
 
+                const today = new Date();
 
-                <!-- Today's Bookings -->
+                today.setHours(0, 0, 0, 0);
 
-                <div class="card">
+                const tomorrow = new Date(today);
 
-                    <span>
-                        Today's Bookings
-                    </span>
+                tomorrow.setDate(
+                    tomorrow.getDate() + 1
+                );
 
-                    <h2>
+                const todayBookings =
+                    safeBookings.filter((booking) => {
 
-                        <%= bookings.filter(booking => {
+                        if (!booking.eventDate) {
+                            return false;
+                        }
 
-                            const today = new Date();
+                        const eventDate =
+                            new Date(booking.eventDate);
+
+                        return (
+                            !isNaN(eventDate.getTime()) &&
+                            eventDate >= today &&
+                            eventDate < tomorrow
+                        );
+
+                    }).length;
+
+                const totalRevenue =
+                    safeInvoices.reduce(
+                        (sum, invoice) => {
+
+                            return sum +
+                                Math.max(
+                                    Number(invoice.totalAmount) || 0,
+                                    0
+                                );
+
+                        },
+                        0
+                    );
+
+                const totalCollected =
+                    safeInvoices.reduce(
+                        (sum, invoice) => {
+
+                            return sum +
+                                Math.max(
+                                    Number(invoice.advance) || 0,
+                                    0
+                                );
+
+                        },
+                        0
+                    );
+
+                const totalOutstanding =
+                    safeInvoices.reduce(
+                        (sum, invoice) => {
+
+                            if (
+                                invoice.balance !== undefined &&
+                                invoice.balance !== null
+                            ) {
+
+                                return sum +
+                                    Math.max(
+                                        Number(invoice.balance) || 0,
+                                        0
+                                    );
+                            }
+
+                            const total =
+                                Math.max(
+                                    Number(invoice.totalAmount) || 0,
+                                    0
+                                );
+
+                            const collected =
+                                Math.max(
+                                    Number(invoice.advance) || 0,
+                                    0
+                                );
+
+                            return sum +
+                                Math.max(
+                                    total - collected,
+                                    0
+                                );
+
+                        },
+                        0
+                    );
+
+                const collectionRate =
+                    totalRevenue > 0
+                        ? Math.min(
+                            Math.round(
+                                (totalCollected / totalRevenue) * 100
+                            ),
+                            100
+                        )
+                        : 0;
+
+                const equipmentOut =
+                    safeEquipment.reduce(
+                        (sum, item) => {
+
+                            return sum +
+                                Math.max(
+                                    Number(item.rentedQuantity) || 0,
+                                    0
+                                );
+
+                        },
+                        0
+                    );
+
+                const upcomingEvents =
+                    safeBookings
+                        .filter((booking) => {
+
+                            if (!booking.eventDate) {
+                                return false;
+                            }
 
                             const eventDate =
                                 new Date(booking.eventDate);
 
-                            return eventDate.toDateString() ===
-                                today.toDateString();
+                            if (
+                                isNaN(
+                                    eventDate.getTime()
+                                )
+                            ) {
+                                return false;
+                            }
 
-                        }).length %>
+                            eventDate.setHours(
+                                0,
+                                0,
+                                0,
+                                0
+                            );
 
-                    </h2>
+                            return eventDate >= today;
 
-                    <small>
-                        Events today
-                    </small>
+                        })
+                        .sort((a, b) => {
+
+                            return new Date(a.eventDate) -
+                                new Date(b.eventDate);
+
+                        })
+                        .slice(0, 5);
+
+                const pendingPaymentsCount =
+                    safeInvoices.filter((invoice) => {
+
+                        const balance =
+                            invoice.balance !== undefined &&
+                            invoice.balance !== null
+
+                                ? Number(invoice.balance)
+
+                                : Math.max(
+                                    (Number(invoice.totalAmount) || 0) -
+                                    (Number(invoice.advance) || 0),
+                                    0
+                                );
+
+                        return balance > 0;
+
+                    }).length;
+
+                const overdueInvoices =
+                    safeInvoices.filter((invoice) => {
+
+                        const balance =
+                            invoice.balance !== undefined &&
+                            invoice.balance !== null
+
+                                ? Number(invoice.balance)
+
+                                : Math.max(
+                                    (Number(invoice.totalAmount) || 0) -
+                                    (Number(invoice.advance) || 0),
+                                    0
+                                );
+
+                        if (balance <= 0) {
+                            return false;
+                        }
+
+                        let dueDateValue =
+                            invoice.dueDate;
+
+                        if (
+                            !dueDateValue &&
+                            invoice.booking
+                        ) {
+                            dueDateValue =
+                                invoice.booking.eventDate;
+                        }
+
+                        if (!dueDateValue) {
+                            return false;
+                        }
+
+                        const dueDate =
+                            new Date(dueDateValue);
+
+                        if (
+                            isNaN(
+                                dueDate.getTime()
+                            )
+                        ) {
+                            return false;
+                        }
+
+                        dueDate.setHours(
+                            0,
+                            0,
+                            0,
+                            0
+                        );
+
+                        return dueDate < today;
+
+                    });
+            %>
+
+            <!-- BUSINESS STATS -->
+
+            <section aria-label="Business statistics">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            Business Overview
+                        </h2>
+
+                        <p>
+                            Your key business numbers at a glance.
+                        </p>
+
+                    </div>
 
                 </div>
 
+                <div class="stats-grid">
 
-                <!-- Total Revenue -->
+                    <div class="stat-card">
 
-                <div class="card">
+                        <div class="stat-top">
 
-                    <span>
-                        Total Revenue
-                    </span>
+                            <span class="stat-title">
+                                Today's Bookings
+                            </span>
 
-                    <h2>
+                            <div class="stat-icon icon-purple">
+                                ▦
+                            </div>
 
-                        ₹<%= invoices.reduce((sum, invoice) => {
+                        </div>
 
-                            return sum +
-                                (Number(invoice.totalAmount) || 0);
+                        <div class="stat-value">
+                            <%= todayBookings %>
+                        </div>
 
-                        }, 0).toLocaleString("en-IN") %>
+                        <div class="stat-description">
+                            Events scheduled for today
+                        </div>
 
-                    </h2>
+                    </div>
 
-                    <small>
-                        Total invoiced
-                    </small>
+                    <div class="stat-card">
 
-                </div>
+                        <div class="stat-top">
 
+                            <span class="stat-title">
+                                Total Revenue
+                            </span>
 
-                <!-- Pending Payments -->
+                            <div class="stat-icon icon-green">
+                                ₹
+                            </div>
 
-                <div class="card">
+                        </div>
 
-                    <span>
-                        Pending Payments
-                    </span>
+                        <div class="stat-value">
 
-                    <h2>
+                            ₹<%= totalRevenue.toLocaleString(
+                                "en-IN",
+                                {
+                                    maximumFractionDigits: 2
+                                }
+                            ) %>
 
-                        ₹<%= invoices.reduce((sum, invoice) => {
+                        </div>
 
-                            return sum +
-                                (Number(invoice.balance) || 0);
+                        <div class="stat-description">
 
-                        }, 0).toLocaleString("en-IN") %>
+                            <strong>
+                                <%= safeInvoices.length %>
+                            </strong>
 
-                    </h2>
+                            invoices created
 
-                    <small>
-                        To be collected
-                    </small>
+                        </div>
 
-                </div>
+                    </div>
 
+                    <div class="stat-card">
 
-                <!-- Equipment Out -->
+                        <div class="stat-top">
 
-                <div class="card">
+                            <span class="stat-title">
+                                Outstanding Payments
+                            </span>
 
-                    <span>
-                        Equipment Out
-                    </span>
+                            <div class="stat-icon icon-orange">
+                                ◷
+                            </div>
 
-                    <h2>
+                        </div>
 
-                        <%= equipment.reduce((sum, item) => {
+                        <div class="stat-value">
 
-                            return sum +
-                                (Number(item.rentedQuantity) || 0);
+                            ₹<%= totalOutstanding.toLocaleString(
+                                "en-IN",
+                                {
+                                    maximumFractionDigits: 2
+                                }
+                            ) %>
 
-                        }, 0) %>
+                        </div>
 
-                    </h2>
+                        <div class="stat-description">
 
-                    <small>
-                        Currently rented
-                    </small>
+                            <strong>
+                                <%= pendingPaymentsCount %>
+                            </strong>
+
+                            invoices with balance due
+
+                        </div>
+
+                    </div>
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+
+                            <span class="stat-title">
+                                Equipment Out
+                            </span>
+
+                            <div class="stat-icon icon-blue">
+                                ▤
+                            </div>
+
+                        </div>
+
+                        <div class="stat-value">
+
+                            <%= equipmentOut.toLocaleString(
+                                "en-IN"
+                            ) %>
+
+                        </div>
+
+                        <div class="stat-description">
+                            Units currently rented, based on equipment records
+                        </div>
+
+                    </div>
 
                 </div>
 
             </section>
 
+            <!-- PAYMENT + QUICK ACTIONS -->
 
-            <!-- =================================================
-                 CONTENT GRID
-            ================================================== -->
+            <section class="overview-grid">
 
-            <section class="content-grid">
-
-
-                <!-- =================================================
-                     UPCOMING EVENTS
-                ================================================== -->
-
-                <div class="panel booking-panel">
+                <div class="panel">
 
                     <div class="panel-header">
 
                         <div>
 
                             <h2>
-                                Upcoming Events
+                                Payment Overview
                             </h2>
 
-                            <p class="panel-subtitle">
-                                Upcoming bookings from your events
+                            <p>
+                                Track invoiced revenue and payment collection.
+                            </p>
+
+                        </div>
+
+                        <span class="small-badge">
+                            All invoices
+                        </span>
+
+                    </div>
+
+                    <div class="panel-body">
+
+                        <div class="payment-total-row">
+
+                            <div>
+
+                                <div class="payment-total-label">
+                                    Total Invoiced
+                                </div>
+
+                                <div class="payment-total">
+
+                                    ₹<%= totalRevenue.toLocaleString(
+                                        "en-IN",
+                                        {
+                                            maximumFractionDigits: 2
+                                        }
+                                    ) %>
+
+                                </div>
+
+                            </div>
+
+                            <div class="collection-rate">
+
+                                <strong>
+                                    <%= collectionRate %>%
+                                </strong>
+
+                                <span>
+                                    Collection rate
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="progress"
+                            role="progressbar"
+                            aria-label="Payment collection rate"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            aria-valuenow="<%= collectionRate %>"
+                        >
+
+                            <div
+                                class="progress-bar"
+                                data-width="<%= collectionRate %>"
+                            ></div>
+
+                        </div>
+
+                        <div class="progress-caption">
+
+                            <span>
+                                Payment collection progress
+                            </span>
+
+                            <span>
+                                <%= collectionRate %>% collected
+                            </span>
+
+                        </div>
+
+                        <div class="payment-details">
+
+                            <div class="payment-detail">
+
+                                <span>
+                                    Collected
+                                </span>
+
+                                <strong class="amount-green">
+
+                                    ₹<%= totalCollected.toLocaleString(
+                                        "en-IN",
+                                        {
+                                            maximumFractionDigits: 2
+                                        }
+                                    ) %>
+
+                                </strong>
+
+                            </div>
+
+                            <div class="payment-detail">
+
+                                <span>
+                                    Outstanding
+                                </span>
+
+                                <strong class="amount-red">
+
+                                    ₹<%= totalOutstanding.toLocaleString(
+                                        "en-IN",
+                                        {
+                                            maximumFractionDigits: 2
+                                        }
+                                    ) %>
+
+                                </strong>
+
+                            </div>
+
+                            <div class="payment-detail">
+
+                                <span>
+                                    Total Invoices
+                                </span>
+
+                                <strong class="amount-purple">
+                                    <%= safeInvoices.length %>
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- QUICK ACTIONS -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2>
+                                Quick Actions
+                            </h2>
+
+                            <p>
+                                Get things done faster.
                             </p>
 
                         </div>
 
                     </div>
 
+                    <div class="panel-body">
 
-                    <!-- TABLE -->
+                        <div class="quick-actions">
+
+                            <a
+                                href="/events"
+                                class="quick-action"
+                            >
+
+                                <div class="quick-icon">
+                                    ＋
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        New Booking
+                                    </strong>
+
+                                    <span>
+                                        Create an event booking
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                            <a
+                                href="/customers"
+                                class="quick-action"
+                            >
+
+                                <div class="quick-icon">
+                                    ♙
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        New Customer
+                                    </strong>
+
+                                    <span>
+                                        Add a customer
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                            <a
+                                href="/invoices"
+                                class="quick-action"
+                            >
+
+                                <div class="quick-icon">
+                                    ▤
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Create Invoice
+                                    </strong>
+
+                                    <span>
+                                        Manage invoices and payments
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                            <a
+                                href="/rentals"
+                                class="quick-action"
+                            >
+
+                                <div class="quick-icon">
+                                    ▦
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Equipment Rental
+                                    </strong>
+
+                                    <span>
+                                        Manage rental records
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- BUSINESS INSIGHTS -->
+
+            <section>
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            Business Insights
+                        </h2>
+
+                        <p>
+                            A quick look at your current operations.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="insights">
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon">
+                            ◷
+                        </div>
+
+                        <div class="insight-content">
+
+                            <span>
+                                Upcoming Events
+                            </span>
+
+                            <strong>
+                                <%= upcomingEvents.length %>
+                            </strong>
+
+                            <p>
+                                Events from today onwards in the displayed upcoming list.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon">
+                            ₹
+                        </div>
+
+                        <div class="insight-content">
+
+                            <span>
+                                Overdue Invoices
+                            </span>
+
+                            <strong>
+                                <%= overdueInvoices.length %>
+                            </strong>
+
+                            <p>
+                                Unpaid invoices with a due date before today.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon">
+                            ▤
+                        </div>
+
+                        <div class="insight-content">
+
+                            <span>
+                                Total Bookings
+                            </span>
+
+                            <strong>
+                                <%= safeBookings.length %>
+                            </strong>
+
+                            <p>
+                                All booking records currently available.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- UPCOMING EVENTS -->
+
+            <section class="panel events-panel">
+
+                <div class="events-header">
+
+                    <div>
+
+                        <h2>
+                            Upcoming Events
+                        </h2>
+
+                        <p>
+                            Keep track of your next scheduled events.
+                        </p>
+
+                    </div>
+
+                    <a href="/events">
+                        View all →
+                    </a>
+
+                </div>
+
+                <% if (upcomingEvents.length > 0) { %>
 
                     <div class="table-wrapper">
 
-                        <table>
+                        <table class="events-table">
 
                             <thead>
 
@@ -675,11 +2206,11 @@
                                     </th>
 
                                     <th>
-                                        Event Type
+                                        Event
                                     </th>
 
                                     <th>
-                                        Event Date
+                                        Date
                                     </th>
 
                                     <th>
@@ -687,11 +2218,7 @@
                                     </th>
 
                                     <th>
-                                        Total Amount
-                                    </th>
-
-                                    <th>
-                                        Advance
+                                        Total
                                     </th>
 
                                     <th>
@@ -706,175 +2233,175 @@
 
                             </thead>
 
-
                             <tbody>
 
-                                <%
-                                    const today = new Date();
+                                <% upcomingEvents.forEach(booking => { %>
 
-                                    const upcomingBookings = bookings
-                                        .filter(booking => {
+                                    <%
+                                        const bookingTotal =
+                                            Math.max(
+                                                Number(
+                                                    booking.totalAmount
+                                                ) || 0,
+                                                0
+                                            );
 
-                                            return new Date(
-                                                booking.eventDate
-                                            ) >= today;
+                                        const bookingBalance =
+                                            booking.balance !== undefined &&
+                                            booking.balance !== null
 
-                                        })
-                                        .slice(0, 5);
-                                %>
+                                                ? Math.max(
+                                                    Number(
+                                                        booking.balance
+                                                    ) || 0,
+                                                    0
+                                                )
 
+                                                : Math.max(
+                                                    bookingTotal -
+                                                    Math.max(
+                                                        Number(
+                                                            booking.advance
+                                                        ) || 0,
+                                                        0
+                                                    ),
+                                                    0
+                                                );
 
-                                <% if (upcomingBookings.length === 0) { %>
+                                        let bookingStatus =
+                                            "Pending";
 
-                                    <tr>
+                                        if (
+                                            bookingTotal > 0 &&
+                                            bookingBalance <= 0
+                                        ) {
 
-                                        <td colspan="9">
+                                            bookingStatus =
+                                                "Paid";
 
-                                            <div class="empty-state">
+                                        } else if (
+                                            bookingBalance <
+                                                bookingTotal &&
+                                            bookingBalance > 0
+                                        ) {
 
-                                                <div class="empty-state-icon">
-                                                    📅
-                                                </div>
+                                            bookingStatus =
+                                                "Partial";
+                                        }
 
-                                                <div>
-                                                    No upcoming events
-                                                </div>
+                                        const statusClass =
+                                            "status-" +
+                                            bookingStatus.toLowerCase();
 
-                                            </div>
+                                        let formattedEventDate =
+                                            "—";
+
+                                        if (
+                                            booking.eventDate
+                                        ) {
+
+                                            const eventDateObject =
+                                                new Date(
+                                                    booking.eventDate
+                                                );
+
+                                            if (
+                                                !isNaN(
+                                                    eventDateObject.getTime()
+                                                )
+                                            ) {
+
+                                                formattedEventDate =
+                                                    eventDateObject.toLocaleDateString(
+                                                        "en-IN",
+                                                        {
+                                                            day: "2-digit",
+                                                            month: "short",
+                                                            year: "numeric"
+                                                        }
+                                                    );
+                                            }
+                                        }
+                                    %>
+
+                                    <tr
+                                        data-booking-id="<%= booking._id %>"
+                                        onclick="viewBooking(this.dataset.bookingId)"
+                                    >
+
+                                        <td>
+
+                                            <span class="customer-name">
+
+                                                <%= booking.customer &&
+                                                    booking.customer.name
+                                                    ? booking.customer.name
+                                                    : "Unknown Customer" %>
+
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+
+                                            <span class="event-type">
+
+                                                <%= booking.eventType ||
+                                                    "Event" %>
+
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+
+                                            <span class="event-date">
+
+                                                <%= formattedEventDate %>
+
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+                                            <%= booking.location || "—" %>
+                                        </td>
+
+                                        <td>
+
+                                            ₹<%= bookingTotal.toLocaleString(
+                                                "en-IN",
+                                                {
+                                                    maximumFractionDigits: 2
+                                                }
+                                            ) %>
+
+                                        </td>
+
+                                        <td>
+
+                                            ₹<%= bookingBalance.toLocaleString(
+                                                "en-IN",
+                                                {
+                                                    maximumFractionDigits: 2
+                                                }
+                                            ) %>
+
+                                        </td>
+
+                                        <td>
+
+                                            <span
+                                                class="status <%= statusClass %>"
+                                            >
+                                                <%= bookingStatus %>
+                                            </span>
 
                                         </td>
 
                                     </tr>
 
-                                <% } else { %>
-
-
-                                    <% upcomingBookings.forEach(booking => { %>
-
-                                        <tr>
-
-
-                                            <!-- Customer -->
-
-                                            <td>
-
-                                                <strong>
-
-                                                    <%= booking.customer
-                                                        ? booking.customer.name
-                                                        : "Unknown Customer" %>
-
-                                                </strong>
-
-                                            </td>
-
-
-                                            <!-- Event Type -->
-
-                                            <td>
-                                                <%= booking.eventType %>
-                                            </td>
-
-
-                                            <!-- Event Date -->
-
-                                            <td>
-
-                                                <%= new Date(
-                                                    booking.eventDate
-                                                ).toLocaleDateString(
-                                                    "en-IN",
-                                                    {
-                                                        day: "2-digit",
-                                                        month: "short",
-                                                        year: "numeric"
-                                                    }
-                                                ) %>
-
-                                            </td>
-
-
-                                            <!-- Location -->
-
-                                            <td>
-                                                <%= booking.location %>
-                                            </td>
-
-
-                                            <!-- Total -->
-
-                                            <td>
-
-                                                ₹<%= Number(
-                                                    booking.totalAmount || 0
-                                                ).toLocaleString("en-IN") %>
-
-                                            </td>
-
-
-                                            <!-- Advance -->
-
-                                            <td>
-
-                                                ₹<%= Number(
-                                                    booking.advance || 0
-                                                ).toLocaleString("en-IN") %>
-
-                                            </td>
-
-
-                                            <!-- Balance -->
-
-                                            <td>
-
-                                                ₹<%= Number(
-                                                    booking.balance || 0
-                                                ).toLocaleString("en-IN") %>
-
-                                            </td>
-
-
-                                            <!-- Payment Status -->
-
-                                            <td>
-
-                                                <% if (
-                                                    booking.paymentStatus === "Paid"
-                                                ) { %>
-
-                                                    <span class="status paid">
-                                                        Paid
-                                                    </span>
-
-                                                <% } else if (
-                                                    booking.paymentStatus === "Partial"
-                                                ) { %>
-
-                                                    <span class="status partial">
-                                                        Partial
-                                                    </span>
-
-                                                <% } else { %>
-
-                                                    <span class="status pending">
-                                                        Pending
-                                                    </span>
-
-                                                <% } %>
-
-                                            </td>
-
-
-                                            <!-- Action -->
-
-                                            
-
-                                        </tr>
-
-                                    <% }) %>
-
-
-                                <% } %>
+                                <% }) %>
 
                             </tbody>
 
@@ -882,209 +2409,975 @@
 
                     </div>
 
+                <% } else { %>
+
+                    <div class="empty-state">
+
+                        <div class="empty-state-icon">
+                            ▦
+                        </div>
+
+                        <strong>
+                            No upcoming events
+                        </strong>
+
+                        <p>
+                            Your upcoming bookings will appear here.
+                        </p>
+
+                    </div>
+
+                <% } %>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================================
+         FLOATING QUICK CALCULATOR
+    ========================================================= -->
+
+    <div
+        class="floating-calculator"
+        id="floatingCalculator"
+    >
+
+        <div
+            class="calculator-card"
+            id="calculatorCard"
+        >
+
+            <div class="calculator-header">
+
+                <div class="calculator-title">
+
+                    <h3>
+                        Quick Calculator
+                    </h3>
+
+                    <p>
+                        Estimate equipment rental costs.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="calculator-close"
+                    onclick="toggleCalculator()"
+                    aria-label="Close calculator"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- EQUIPMENT -->
+
+            <div class="items-title">
+
+                <strong>
+                    Equipment
+                </strong>
+
+                <span>
+                    Quantity × Price
+                </span>
+
+            </div>
+
+            <div id="calculatorItems">
+
+                <div class="calculator-item">
+
+                    <select
+                        class="item-select"
+                        onchange="itemChanged(this)"
+                        aria-label="Select equipment"
+                    >
+
+                        <option value="">
+                            Select equipment
+                        </option>
+
+                        <% safeEquipment.forEach(item => { %>
+
+                            <option
+                                value="<%= item._id %>"
+                                data-price="<%= Math.max(
+                                    Number(item.rentalPrice) || 0,
+                                    0
+                                ) %>"
+                            >
+
+                                <%= item.name ||
+                                    "Unnamed Equipment" %>
+
+                            </option>
+
+                        <% }) %>
+
+                    </select>
+
+
+                    <input
+                        type="number"
+                        class="item-quantity"
+                        min="1"
+                        step="1"
+                        value="1"
+                        oninput="calculateFinalTotal()"
+                        aria-label="Equipment quantity"
+                        placeholder="Qty"
+                    >
+
+
+                    <div class="item-price">
+
+                        <span>
+                            ₹
+                        </span>
+
+                        <input
+                            type="number"
+                            class="item-rate"
+                            min="0"
+                            step="0.01"
+                            placeholder="Price"
+                            readonly
+                            aria-label="Equipment rental price"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="remove-item"
+                        onclick="removeItem(this)"
+                        title="Remove item"
+                        aria-label="Remove equipment"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="add-item-btn"
+                onclick="addItem()"
+            >
+                + Add Equipment
+            </button>
+
+
+            <!-- ADDITIONAL EXPENSES -->
+
+            <div class="expense-section">
+
+                <div class="expense-header">
+
+                    <strong>
+                        Additional Expenses
+                    </strong>
+
+                    <span>
+                        Optional
+                    </span>
+
                 </div>
 
 
-                <!-- =================================================
-                     QUICK ACTIONS
-                ================================================== -->
+                <div class="expense-grid">
 
-                <div class="panel quick-actions-panel">
+                    <!-- LABOUR -->
 
+                    <div class="expense-field">
 
-                    <div class="panel-header">
+                        <label for="labourExpense">
+                            Workers / Labour
+                        </label>
 
-                        <div>
+                        <div class="expense-input">
 
-                            <h2>
-                                Quick Actions
-                            </h2>
+                            <span>
+                                ₹
+                            </span>
 
-                            <p class="panel-subtitle">
-                                Frequently used actions
-                            </p>
+                            <input
+                                id="labourExpense"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Labour charge"
+                                oninput="calculateFinalTotal()"
+                            >
 
                         </div>
 
                     </div>
 
 
-                    <div class="actions">
+                    <!-- OIL -->
 
+                    <div class="expense-field">
 
-                        <!-- New Customer -->
+                        <label for="oilExpense">
+                            Oil / Fuel
+                        </label>
 
-                        <button
-                            class="quick-action-btn"
-                            onclick="window.location.href='/customers'">
+                        <div class="expense-input">
 
-                            <span class="quick-action-icon">
-                                👥
+                            <span>
+                                ₹
                             </span>
 
-                            <span class="quick-action-text">
+                            <input
+                                id="oilExpense"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Oil / fuel"
+                                oninput="calculateFinalTotal()"
+                            >
 
-                                <span class="quick-action-title">
-                                    New Customer
-                                </span>
+                        </div>
 
-                                <span class="quick-action-desc">
-                                    Add a customer
-                                </span>
+                    </div>
 
+
+                    <!-- TRANSPORT -->
+
+                    <div class="expense-field">
+
+                        <label for="transportExpense">
+                            Transport
+                        </label>
+
+                        <div class="expense-input">
+
+                            <span>
+                                ₹
                             </span>
 
-                            <span class="quick-action-arrow">
-                                →
+                            <input
+                                id="transportExpense"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Transport charge"
+                                oninput="calculateFinalTotal()"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- OTHER -->
+
+                    <div class="expense-field">
+
+                        <label for="otherExpense">
+                            Other Expense
+                        </label>
+
+                        <div class="expense-input">
+
+                            <span>
+                                ₹
                             </span>
 
-                        </button>
+                            <input
+                                id="otherExpense"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Other expense"
+                                oninput="calculateFinalTotal()"
+                            >
 
-
-                        <!-- New Booking -->
-
-                        <button
-                            class="quick-action-btn"
-                            onclick="window.location.href='/events'">
-
-                            <span class="quick-action-icon">
-                                📅
-                            </span>
-
-                            <span class="quick-action-text">
-
-                                <span class="quick-action-title">
-                                    New Booking
-                                </span>
-
-                                <span class="quick-action-desc">
-                                    Create an event
-                                </span>
-
-                            </span>
-
-                            <span class="quick-action-arrow">
-                                →
-                            </span>
-
-                        </button>
-
-
-                        <!-- Create Invoice -->
-
-                        <button
-                            class="quick-action-btn"
-                            onclick="window.location.href='/invoices'">
-
-                            <span class="quick-action-icon">
-                                🧾
-                            </span>
-
-                            <span class="quick-action-text">
-
-                                <span class="quick-action-title">
-                                    Create Invoice
-                                </span>
-
-                                <span class="quick-action-desc">
-                                    Generate a new invoice
-                                </span>
-
-                            </span>
-
-                            <span class="quick-action-arrow">
-                                →
-                            </span>
-
-                        </button>
-
-
-                        <!-- Equipment Rental -->
-
-                        <button
-                            class="quick-action-btn"
-                            onclick="window.location.href='/rentals'">
-
-                            <span class="quick-action-icon">
-                                🔊
-                            </span>
-
-                            <span class="quick-action-text">
-
-                                <span class="quick-action-title">
-                                    Equipment Rental
-                                </span>
-
-                                <span class="quick-action-desc">
-                                    Rent equipment
-                                </span>
-
-                            </span>
-
-                            <span class="quick-action-arrow">
-                                →
-                            </span>
-
-                        </button>
-
-
-                        <!-- Add Payment -->
-
-                        <button
-                            class="quick-action-btn"
-                            onclick="window.location.href='/payments'">
-
-                            <span class="quick-action-icon">
-                                💳
-                            </span>
-
-                            <span class="quick-action-text">
-
-                                <span class="quick-action-title">
-                                    Add Payment
-                                </span>
-
-                                <span class="quick-action-desc">
-                                    Record a payment
-                                </span>
-
-                            </span>
-
-                            <span class="quick-action-arrow">
-                                →
-                            </span>
-
-                        </button>
-
+                        </div>
 
                     </div>
 
                 </div>
 
+            </div>
 
-            </section>
 
-        </main>
+            <!-- TOTAL -->
+
+            <div class="calculator-total">
+
+                <div class="total-line">
+
+                    <span>
+                        Estimated Total
+                    </span>
+
+                    <strong id="finalTotal">
+                        ₹0
+                    </strong>
+
+                </div>
+
+
+                <div class="total-breakdown">
+
+                    <span>
+                        Equipment:
+                        <span id="itemsTotal">
+                            ₹0
+                        </span>
+                    </span>
+
+                    <span>
+                        Labour:
+                        <span id="labourTotal">
+                            ₹0
+                        </span>
+                    </span>
+
+                    <span>
+                        Oil / Fuel:
+                        <span id="oilTotal">
+                            ₹0
+                        </span>
+                    </span>
+
+                    <span>
+                        Transport:
+                        <span id="transportTotal">
+                            ₹0
+                        </span>
+                    </span>
+
+                    <span>
+                        Other:
+                        <span id="otherTotal">
+                            ₹0
+                        </span>
+                    </span>
+
+                    <span>
+                        Expenses:
+                        <span id="expenseTotal">
+                            ₹0
+                        </span>
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="calculator-clear"
+                onclick="clearCalculator()"
+            >
+                Clear Calculator
+            </button>
+
+        </div>
+
+
+        <!-- CALCULATOR TOGGLE -->
+
+        <button
+            type="button"
+            class="calculator-toggle"
+            id="calculatorToggle"
+            onclick="toggleCalculator()"
+            aria-expanded="false"
+            aria-label="Open quick calculator"
+        >
+
+            <span id="calculatorToggleIcon">
+                ＋
+            </span>
+
+        </button>
 
     </div>
 
 
-    <!-- =================================================
-         JAVASCRIPT
-    ================================================== -->
-
     <script>
+
+        /* =========================================================
+           DATE AND GREETING
+        ========================================================= */
+
+        const now = new Date();
+
+        const currentHour =
+            now.getHours();
+
+        let greeting =
+            "Good evening";
+
+        if (currentHour < 12) {
+
+            greeting =
+                "Good morning";
+
+        } else if (currentHour < 17) {
+
+            greeting =
+                "Good afternoon";
+
+        }
+
+        document.getElementById(
+            "welcomeTitle"
+        ).textContent =
+            `${greeting}, Irshad 👋`;
+
+        document.getElementById(
+            "todayDate"
+        ).textContent =
+            now.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+
+        /* =========================================================
+           PAYMENT PROGRESS
+        ========================================================= */
+
+        window.addEventListener(
+            "load",
+            () => {
+
+                requestAnimationFrame(
+                    () => {
+
+                        document
+                            .querySelectorAll(
+                                ".progress-bar"
+                            )
+                            .forEach(bar => {
+
+                                const width =
+                                    Math.max(
+                                        0,
+                                        Math.min(
+                                            Number(
+                                                bar.dataset.width
+                                            ) || 0,
+                                            100
+                                        )
+                                    );
+
+                                bar.style.width =
+                                    `${width}%`;
+
+                            });
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =========================================================
+           VIEW BOOKING
+        ========================================================= */
 
         function viewBooking(id) {
 
-            window.location.href =
-                "/events/view/" + id;
+            if (!id) {
+                return;
+            }
 
+            window.location.href =
+                "/events/view/" +
+                encodeURIComponent(id);
         }
+
+
+        /* =========================================================
+           CALCULATOR OPEN / CLOSE
+        ========================================================= */
+
+        function toggleCalculator() {
+
+            const card =
+                document.getElementById(
+                    "calculatorCard"
+                );
+
+            const button =
+                document.getElementById(
+                    "calculatorToggle"
+                );
+
+            const icon =
+                document.getElementById(
+                    "calculatorToggleIcon"
+                );
+
+            const isOpen =
+                card.classList.toggle("show");
+
+            button.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
+
+            button.setAttribute(
+                "aria-label",
+                isOpen
+                    ? "Close quick calculator"
+                    : "Open quick calculator"
+            );
+
+            icon.textContent =
+                isOpen
+                    ? "×"
+                    : "＋";
+        }
+
+
+        /* =========================================================
+           ITEM SELECTED
+        ========================================================= */
+
+        function itemChanged(select) {
+
+            const row =
+                select.closest(
+                    ".calculator-item"
+                );
+
+            const option =
+                select.options[
+                    select.selectedIndex
+                ];
+
+            const price =
+                Number(
+                    option.dataset.price
+                ) || 0;
+
+            row.querySelector(
+                ".item-rate"
+            ).value =
+                select.value
+                    ? price
+                    : "";
+
+            calculateFinalTotal();
+        }
+
+
+        /* =========================================================
+           ADD EQUIPMENT
+        ========================================================= */
+
+        function addItem() {
+
+            const container =
+                document.getElementById(
+                    "calculatorItems"
+                );
+
+            const firstItem =
+                container.querySelector(
+                    ".calculator-item"
+                );
+
+            if (!firstItem) {
+                return;
+            }
+
+            const newItem =
+                firstItem.cloneNode(true);
+
+            newItem.querySelector(
+                ".item-select"
+            ).value = "";
+
+            newItem.querySelector(
+                ".item-quantity"
+            ).value = "1";
+
+            newItem.querySelector(
+                ".item-rate"
+            ).value = "";
+
+            container.appendChild(
+                newItem
+            );
+
+            newItem.querySelector(
+                ".item-select"
+            ).focus();
+
+            calculateFinalTotal();
+        }
+
+
+        /* =========================================================
+           REMOVE EQUIPMENT
+        ========================================================= */
+
+        function removeItem(button) {
+
+            const container =
+                document.getElementById(
+                    "calculatorItems"
+                );
+
+            const rows =
+                container.querySelectorAll(
+                    ".calculator-item"
+                );
+
+            if (rows.length <= 1) {
+
+                const row =
+                    rows[0];
+
+                if (row) {
+
+                    row.querySelector(
+                        ".item-select"
+                    ).value = "";
+
+                    row.querySelector(
+                        ".item-quantity"
+                    ).value = "1";
+
+                    row.querySelector(
+                        ".item-rate"
+                    ).value = "";
+                }
+
+                calculateFinalTotal();
+
+                return;
+            }
+
+            button
+                .closest(".calculator-item")
+                .remove();
+
+            calculateFinalTotal();
+        }
+
+
+        /* =========================================================
+           MONEY FORMAT
+        ========================================================= */
+
+        function formatMoney(amount) {
+
+            return "₹" +
+                Number(
+                    amount || 0
+                ).toLocaleString(
+                    "en-IN",
+                    {
+                        maximumFractionDigits: 2
+                    }
+                );
+        }
+
+
+        /* =========================================================
+           CALCULATE FINAL TOTAL
+        ========================================================= */
+
+        function calculateFinalTotal() {
+
+            let equipmentTotal =
+                0;
+
+            document
+                .querySelectorAll(
+                    ".calculator-item"
+                )
+                .forEach(row => {
+
+                    const quantityInput =
+                        row.querySelector(
+                            ".item-quantity"
+                        );
+
+                    const rateInput =
+                        row.querySelector(
+                            ".item-rate"
+                        );
+
+                    const quantity =
+                        Math.max(
+                            Math.floor(
+                                Number(
+                                    quantityInput.value
+                                ) || 0
+                            ),
+                            0
+                        );
+
+                    const rate =
+                        Math.max(
+                            Number(
+                                rateInput.value
+                            ) || 0,
+                            0
+                        );
+
+                    equipmentTotal +=
+                        quantity * rate;
+
+                });
+
+
+            /* LABOUR */
+
+            const labour =
+                Math.max(
+                    Number(
+                        document.getElementById(
+                            "labourExpense"
+                        ).value
+                    ) || 0,
+                    0
+                );
+
+
+            /* OIL */
+
+            const oil =
+                Math.max(
+                    Number(
+                        document.getElementById(
+                            "oilExpense"
+                        ).value
+                    ) || 0,
+                    0
+                );
+
+
+            /* TRANSPORT */
+
+            const transport =
+                Math.max(
+                    Number(
+                        document.getElementById(
+                            "transportExpense"
+                        ).value
+                    ) || 0,
+                    0
+                );
+
+
+            /* OTHER */
+
+            const other =
+                Math.max(
+                    Number(
+                        document.getElementById(
+                            "otherExpense"
+                        ).value
+                    ) || 0,
+                    0
+                );
+
+
+            /* EXPENSES */
+
+            const totalExpenses =
+                labour +
+                oil +
+                transport +
+                other;
+
+
+            /* FINAL TOTAL */
+
+            const finalTotal =
+                equipmentTotal +
+                totalExpenses;
+
+
+            /* UPDATE */
+
+            document.getElementById(
+                "itemsTotal"
+            ).textContent =
+                formatMoney(
+                    equipmentTotal
+                );
+
+            document.getElementById(
+                "labourTotal"
+            ).textContent =
+                formatMoney(
+                    labour
+                );
+
+            document.getElementById(
+                "oilTotal"
+            ).textContent =
+                formatMoney(
+                    oil
+                );
+
+            document.getElementById(
+                "transportTotal"
+            ).textContent =
+                formatMoney(
+                    transport
+                );
+
+            document.getElementById(
+                "otherTotal"
+            ).textContent =
+                formatMoney(
+                    other
+                );
+
+            document.getElementById(
+                "expenseTotal"
+            ).textContent =
+                formatMoney(
+                    totalExpenses
+                );
+
+            document.getElementById(
+                "finalTotal"
+            ).textContent =
+                formatMoney(
+                    finalTotal
+                );
+        }
+
+
+        /* =========================================================
+           CLEAR CALCULATOR
+        ========================================================= */
+
+        function clearCalculator() {
+
+            const container =
+                document.getElementById(
+                    "calculatorItems"
+                );
+
+            const rows =
+                container.querySelectorAll(
+                    ".calculator-item"
+                );
+
+            rows.forEach(
+                (row, index) => {
+
+                    if (index > 0) {
+                        row.remove();
+                    }
+
+                }
+            );
+
+            const firstItem =
+                container.querySelector(
+                    ".calculator-item"
+                );
+
+            if (firstItem) {
+
+                firstItem.querySelector(
+                    ".item-select"
+                ).value = "";
+
+                firstItem.querySelector(
+                    ".item-quantity"
+                ).value = "1";
+
+                firstItem.querySelector(
+                    ".item-rate"
+                ).value = "";
+            }
+
+
+            document.getElementById(
+                "labourExpense"
+            ).value = "";
+
+            document.getElementById(
+                "oilExpense"
+            ).value = "";
+
+            document.getElementById(
+                "transportExpense"
+            ).value = "";
+
+            document.getElementById(
+                "otherExpense"
+            ).value = "";
+
+            calculateFinalTotal();
+        }
+
+
+        /* =========================================================
+           INITIAL CALCULATION
+        ========================================================= */
+
+        calculateFinalTotal();
+
+
+        /* =========================================================
+           ESCAPE KEY
+        ========================================================= */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    const card =
+                        document.getElementById(
+                            "calculatorCard"
+                        );
+
+                    if (
+                        card.classList.contains(
+                            "show"
+                        )
+                    ) {
+
+                        toggleCalculator();
+
+                    }
+
+                }
+
+            }
+        );
 
     </script>
 
 </body>
 
 </html>
-

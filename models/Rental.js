@@ -5,7 +5,7 @@ const rentalSchema = new mongoose.Schema(
         booking: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Booking",
-            required: true
+            required: false
         },
 
         equipment: {

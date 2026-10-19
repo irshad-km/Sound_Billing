@@ -16,10 +16,33 @@ export const getRentals = async (req, res) => {
         const equipments = await Equipment.find()
             .sort({ name: 1 });
 
+        /*
+        |--------------------------------------------------------------------------
+        | Calculate total rental amount for each booking
+        |--------------------------------------------------------------------------
+        */
+
+        const bookingRentalAmounts = {};
+
+        rentals.forEach((rental) => {
+            if (!rental.booking) return;
+
+            const bookingId = rental.booking._id.toString();
+
+            if (!bookingRentalAmounts[bookingId]) {
+                bookingRentalAmounts[bookingId] = 0;
+            }
+
+            bookingRentalAmounts[bookingId] += Number(
+                rental.rentalAmount || 0
+            );
+        });
+
         res.render("rentals", {
             rentals,
             bookings,
-            equipments
+            equipments,
+            bookingRentalAmounts
         });
 
     } catch (error) {
@@ -87,6 +110,7 @@ export const returnRental = async (req, res) => {
 
         if (equipment) {
             equipment.availableQuantity += rental.quantity;
+
             equipment.rentedQuantity = Math.max(
                 equipment.rentedQuantity - rental.quantity,
                 0
@@ -106,3 +130,18 @@ export const returnRental = async (req, res) => {
         res.status(500).send("Failed to return rental");
     }
 };
+
+export const deleteRental = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        await Rental.findByIdAndDelete(id);
+
+        res.redirect("/rentals");
+
+    } catch (error) {
+        console.error("Delete Rental Error:", error);
+        res.status(500).send("Failed to delete rental");
+    }
+};
+
